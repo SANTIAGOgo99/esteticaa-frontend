@@ -1,0 +1,246 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-container {
+  background: white;
+  border-radius: 24px;
+  max-width: 500px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 20px 35px -8px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: #f1f1f1;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.close-button:hover {
+  background: #e0e0e0;
+  color: #1a1a1a;
+}
+
+.modal-header {
+  text-align: center;
+  padding: 1.5rem 1.5rem 0.5rem;
+}
+
+.header-icon {
+  width: 56px;
+  height: 56px;
+  background: #fef9f2;
+  border-radius: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  color: #b8860b;
+}
+
+.modal-header h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 0.25rem;
+}
+
+.modal-header p {
+  font-size: 0.85rem;
+  color: #4a4a4a;
+  margin: 0;
+}
+
+.service-summary {
+  background: #fef9f2;
+  margin: 1rem 1.5rem;
+  padding: 0.8rem 1rem;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1px solid #e8e0d5;
+}
+
+.service-summary svg {
+  color: #b8860b;
+  flex-shrink: 0;
+}
+
+.service-summary strong {
+  display: block;
+  font-size: 0.9rem;
+  color: #1a1a1a;
+}
+
+.service-summary span {
+  font-size: 0.75rem;
+  color: #4a4a4a;
+}
+
+.modal-form {
+  padding: 0 1.5rem 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #b8860b;
+  margin-bottom: 0.5rem;
+}
+
+.date-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d4c5b0;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  color: #1a1a1a;
+  background: white;
+  transition: all 0.2s;
+}
+
+.date-input:focus {
+  outline: none;
+  border-color: #b8860b;
+  box-shadow: 0 0 0 2px rgba(184, 134, 11, 0.2);
+}
+
+.time-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.time-slot {
+  padding: 0.6rem 0;
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.time-slot:hover {
+  background: #fef9f2;
+  border-color: #b8860b;
+}
+
+.time-slot.selected {
+  background: #b8860b;
+  border-color: #b8860b;
+  color: white;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.btn-secondary {
+  flex: 1;
+  padding: 0.75rem;
+  background: #f1f1f1;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #4a4a4a;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background: #e0e0e0;
+  color: #1a1a1a;
+}
+
+.btn-primary {
+  flex: 2;
+  padding: 0.75rem;
+  background: #1a1a1a;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #fef9f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #b8860b;
+  color: #1a1a1a;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 500px) {
+  .time-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .modal-actions {
+    flex-direction: column;
+  }
+  .btn-primary, .btn-secondary {
+    width: 100%;
+  }
+}

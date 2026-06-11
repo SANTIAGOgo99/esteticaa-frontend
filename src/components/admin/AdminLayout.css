@@ -1,0 +1,25 @@
+/* src/components/admin/AdminLayout.css */
+
+.saas-admin-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background-color: #FAF6F0; /* Ivory base */
+}
+
+.saas-admin-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* Previene que el contenido expanda la pantalla de más */
+  height: 100vh;
+  overflow: hidden;
+}
+
+.saas-admin-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: #FAF6F0; /* Ivory base */
+}

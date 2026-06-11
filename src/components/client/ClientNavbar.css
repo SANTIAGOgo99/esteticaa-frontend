@@ -1,0 +1,104 @@
+/* src/components/client/ClientNavbar.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+.saas-client-navbar {
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  font-family: 'Inter', system-ui, sans-serif;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+}
+
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-logo-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.navbar-logo-link:hover { opacity: 0.8; }
+
+.navbar-logo-link img {
+  height: 42px; width: 42px;
+  object-fit: contain;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  padding: 2px;
+}
+
+.navbar-logo-link span {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: 0.5px;
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.nav-btn-home {
+  display: flex; align-items: center; gap: 6px;
+  color: #64748b;
+  text-decoration: none;
+  font-size: 0.85rem; font-weight: 600;
+  transition: color 0.2s;
+}
+.nav-btn-home:hover { color: #4f46e5; }
+
+.navbar-profile {
+  display: flex; align-items: center; gap: 10px;
+  padding-left: 16px;
+  border-left: 1px solid #e2e8f0;
+}
+
+.avatar-circle {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: #e0e7ff;
+  color: #4f46e5;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.profile-name {
+  color: #0f172a;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.btn-logout-icon {
+  background: #fef2f2;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  padding: 8px;
+  border-radius: 10px;
+  transition: all 0.2s;
+}
+.btn-logout-icon:hover {
+  background: #fecaca;
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+@media (max-width: 600px) {
+  .hide-mobile { display: none; }
+  .navbar-container { padding: 12px 16px; }
+  .navbar-actions { gap: 12px; }
+  .navbar-profile { padding-left: 12px; }
+}

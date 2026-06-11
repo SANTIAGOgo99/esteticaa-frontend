@@ -1,0 +1,154 @@
+/* src/components/public/Footer.css */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+.footer-saas-section {
+  background-color: #2a1c13;
+  color: #f8f4ef;
+  padding: 80px 32px 0;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  border-top: 1px solid rgba(184, 154, 106, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Textura sutil de fondo */
+.footer-saas-section::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(184, 154, 106, 0.6), transparent);
+}
+
+.footer-saas-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1.4fr 1fr;
+  gap: 64px;
+  padding-bottom: 64px;
+}
+
+/* ── Título de columna ───────────────────────────────────────────────────── */
+.footer-col h3 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 400;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin: 0 0 28px;
+  position: relative;
+  padding-bottom: 16px;
+}
+.footer-col h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 28px; height: 1px;
+  background: rgba(184, 154, 106, 0.6);
+}
+
+/* ── Marca / Logo ────────────────────────────────────────────────────────── */
+.footer-logo {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 22px;
+}
+.footer-logo-img {
+  height: 42px; width: auto;
+  background: white; border-radius: 10px; padding: 3px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.footer-logo span {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.25rem; font-weight: 500;
+  color: #fff; letter-spacing: 1.5px;
+}
+
+.footer-desc {
+  color: rgba(248, 244, 239, 0.52);
+  font-size: 0.88rem; line-height: 1.8;
+  margin-bottom: 28px; max-width: 360px;
+  font-weight: 300;
+}
+
+/* ── Redes sociales ──────────────────────────────────────────────────────── */
+.social-links { display: flex; gap: 10px; }
+
+.social-links a {
+  color: rgba(212, 184, 150, 0.8);
+  background: rgba(184, 154, 106, 0.08);
+  width: 40px; height: 40px;
+  border: 1px solid rgba(184, 154, 106, 0.2);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s ease;
+}
+.social-links a:hover {
+  background: rgba(184, 154, 106, 0.18);
+  border-color: rgba(184, 154, 106, 0.5);
+  color: #d4b896;
+  transform: translateY(-2px);
+}
+
+/* ── Contacto ────────────────────────────────────────────────────────────── */
+.contact-info, .footer-links {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+.contact-info li {
+  display: flex; align-items: flex-start; gap: 12px;
+  color: rgba(248, 244, 239, 0.55);
+  font-size: 0.88rem; line-height: 1.65; font-weight: 300;
+}
+
+.contact-icon-wrapper {
+  background: rgba(184, 154, 106, 0.1);
+  color: rgba(212, 184, 150, 0.7);
+  padding: 7px; display: flex;
+  align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── Legal ───────────────────────────────────────────────────────────────── */
+.footer-links a {
+  color: rgba(248, 244, 239, 0.5);
+  text-decoration: none; font-size: 0.85rem;
+  font-weight: 400; letter-spacing: 0.3px;
+  transition: color 0.25s; display: inline-block;
+  position: relative;
+}
+.footer-links a::after {
+  content: '';
+  position: absolute; bottom: -2px; left: 0;
+  width: 0; height: 1px;
+  background: rgba(184, 154, 106, 0.5);
+  transition: width 0.3s ease;
+}
+.footer-links a:hover { color: rgba(212, 184, 150, 0.9); }
+.footer-links a:hover::after { width: 100%; }
+
+/* ── Barra inferior ──────────────────────────────────────────────────────── */
+.footer-bottom {
+  border-top: 1px solid rgba(184, 154, 106, 0.12);
+  padding: 24px 0;
+  text-align: center;
+  color: rgba(248, 244, 239, 0.28);
+  font-size: 0.78rem;
+  letter-spacing: 0.5px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .footer-saas-container { grid-template-columns: 1fr 1fr; gap: 44px; }
+}
+@media (max-width: 600px) {
+  .footer-saas-section { padding: 60px 20px 0; }
+  .footer-saas-container { grid-template-columns: 1fr; gap: 36px; text-align: center; }
+  .footer-desc { margin: 0 auto 28px; }
+  .footer-logo, .social-links { justify-content: center; }
+  .footer-col h3::after { left: 50%; transform: translateX(-50%); }
+  .contact-info li { flex-direction: column; align-items: center; text-align: center; }
+}

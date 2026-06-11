@@ -1,0 +1,509 @@
+/* ═══════════════════════════════════════════════════════════
+   AdminHeader.css — Command Center v3
+   Ezequiel Castillo Hair Designer · Atelier Admin
+═══════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Outfit:wght@300;400;500;600&display=swap');
+
+.ah-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  padding: 0 24px;
+  background: #ffffff;
+  border-bottom: 1px solid rgba(201,160,80,.12);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  font-family: 'Outfit', system-ui, sans-serif;
+  flex-shrink: 0;
+  gap: 16px;
+  box-shadow: 0 1px 10px rgba(46,26,14,.04);
+  animation: ahIn .4s both;
+}
+
+@keyframes ahIn {
+  from { opacity:0; transform:translateY(-8px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* ── Izquierda ── */
+.ah-left {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.ah-breadcrumb {
+  font-size: .55rem;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: #8C7060;
+}
+
+.ah-title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #2E1A0E;
+  line-height: 1;
+}
+
+/* ── Derecha ── */
+.ah-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Buscador */
+.ah-search {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: #FAF6F0;
+  border: 1px solid rgba(201,160,80,.18);
+  border-radius: 9px;
+  padding: 0 12px;
+  height: 36px;
+  width: 240px;
+  transition: all .2s;
+}
+
+.ah-search:focus-within {
+  border-color: #C9A050;
+  box-shadow: 0 0 0 2px rgba(201,160,80,.1);
+  background: #fff;
+}
+
+.ah-search-ic {
+  color: #8C7060;
+  flex-shrink: 0;
+  transition: color .2s;
+}
+.ah-search:focus-within .ah-search-ic { color: #C9A050; }
+
+.ah-search input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: 'Outfit', sans-serif;
+  font-size: .8rem;
+  color: #2E1A0E;
+  width: 100%;
+}
+.ah-search input::placeholder { color: rgba(140,112,96,.5); }
+
+.ah-kbd {
+  font-size: .55rem;
+  color: #8C7060;
+  background: rgba(140,112,96,.1);
+  border: 1px solid rgba(140,112,96,.18);
+  border-radius: 4px;
+  padding: 2px 5px;
+  font-family: 'Outfit', sans-serif;
+  flex-shrink: 0;
+  opacity: .7;
+  transition: opacity .2s;
+}
+.ah-search:focus-within .ah-kbd { opacity: 0; }
+
+/* Icono botón */
+.ah-icon-btn {
+  position: relative;
+  width: 36px; height: 36px;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #8C7060;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+}
+.ah-icon-btn:hover {
+  background: #F2E9DC;
+  color: #2E1A0E;
+  border-color: rgba(201,160,80,.14);
+}
+
+.ah-badge {
+  position: absolute;
+  top: 5px; right: 5px;
+  background: #C07A60;
+  color: #fff;
+  font-size: .44rem;
+  font-weight: 700;
+  width: 13px; height: 13px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  animation: badgePop .4s .5s both;
+}
+
+@keyframes badgePop {
+  from { transform:scale(0); opacity:0; }
+  to   { transform:scale(1); opacity:1; }
+}
+
+/* Divider */
+.ah-divider {
+  width: 1px; height: 24px;
+  background: rgba(140,112,96,.16);
+  margin: 0 4px;
+}
+
+/* Perfil */
+.ah-profile-wrap {
+  position: relative;
+}
+
+.ah-profile {
+  display: flex; align-items: center; gap: 9px;
+  padding: 4px 10px 4px 4px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all .2s;
+  border: 1px solid transparent;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+}
+.ah-profile:hover,
+.ah-profile.is-open {
+  background: #F2E9DC;
+  border-color: rgba(201,160,80,.14);
+}
+
+.ah-ava {
+  width: 34px; height: 34px;
+  border-radius: 9px;
+  background: #F2E9DC;
+  border: 1px solid rgba(201,160,80,.26);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: .88rem; font-weight: 500;
+  color: #8B4C38;
+  transition: border-color .2s;
+}
+.ah-profile:hover .ah-ava { border-color: rgba(201,160,80,.5); }
+
+.ah-info { display: flex; flex-direction: column; gap: 0; }
+
+.ah-name {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: .95rem; font-weight: 500;
+  color: #2E1A0E; line-height: 1.1; display: block;
+}
+
+.ah-role {
+  font-size: .55rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #8C7060;
+  display: block;
+}
+
+.ah-chevron {
+  color: #8C7060;
+  transition: transform .2s, color .2s;
+}
+.ah-profile:hover .ah-chevron,
+.ah-profile.is-open .ah-chevron {
+  transform: rotate(180deg);
+  color: #2E1A0E;
+}
+
+.ah-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 260px;
+  padding: 10px;
+  background: #ffffff;
+  border: 1px solid rgba(201,160,80,.18);
+  border-radius: 14px;
+  box-shadow: 0 18px 50px rgba(46,26,14,.16);
+  animation: ahMenuIn .16s ease both;
+}
+
+@keyframes ahMenuIn {
+  from { opacity: 0; transform: translateY(-4px) scale(.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.ah-menu__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid rgba(140,112,96,.12);
+}
+
+.ah-menu__ava {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: #F2E9DC;
+  border: 1px solid rgba(201,160,80,.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  color: #8B4C38;
+  flex-shrink: 0;
+}
+
+.ah-menu__head strong {
+  display: block;
+  color: #2E1A0E;
+  font-size: .9rem;
+  line-height: 1.1;
+}
+
+.ah-menu__head span {
+  display: block;
+  color: #8C7060;
+  font-size: .72rem;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+.ah-menu__item {
+  width: 100%;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: #5E412F;
+  font-family: 'Outfit', system-ui, sans-serif;
+  font-size: .82rem;
+  cursor: pointer;
+  transition: all .18s;
+}
+
+.ah-menu__item:hover {
+  background: #FAF6F0;
+  border-color: rgba(201,160,80,.16);
+  color: #2E1A0E;
+}
+
+.ah-menu__item--danger {
+  color: #B42318;
+}
+
+.ah-menu__item--danger:hover {
+  background: #FEF2F2;
+  border-color: rgba(180,35,24,.14);
+  color: #B42318;
+}
+
+.ah-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(29, 17, 10, .46);
+  backdrop-filter: blur(8px);
+  box-sizing: border-box;
+}
+
+.ah-modal {
+  width: min(520px, 100%);
+  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid rgba(201,160,80,.18);
+  border-radius: 16px;
+  box-shadow: 0 30px 90px rgba(29, 17, 10, .30);
+  animation: ahMenuIn .18s ease both;
+}
+
+.ah-modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 26px 18px;
+  border-bottom: 1px solid rgba(140,112,96,.12);
+  background: linear-gradient(180deg, #fffaf3 0%, #ffffff 100%);
+  flex-shrink: 0;
+}
+
+.ah-modal__header p {
+  margin: 0 0 4px;
+  font-size: .58rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #8C7060;
+}
+
+.ah-modal__header h2 {
+  margin: 0;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.72rem;
+  color: #2E1A0E;
+  line-height: 1;
+}
+
+.ah-modal__header button {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(201,160,80,.18);
+  border-radius: 10px;
+  background: #FAF6F0;
+  color: #8C7060;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all .18s;
+}
+
+.ah-modal__header button:hover {
+  background: #F2E9DC;
+  color: #2E1A0E;
+}
+
+.ah-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px 26px 26px;
+  overflow-y: auto;
+  max-height: calc(100vh - 160px);
+  box-sizing: border-box;
+}
+
+.ah-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: .78rem;
+  font-weight: 600;
+  color: #5E412F;
+}
+
+.ah-form input {
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid rgba(140,112,96,.18);
+  border-radius: 12px;
+  background: #FCF8F2;
+  color: #2E1A0E;
+  font-family: 'Outfit', system-ui, sans-serif;
+  font-size: .9rem;
+  font-weight: 500;
+  outline: none;
+  transition: all .18s;
+  box-sizing: border-box;
+}
+
+.ah-form input:focus {
+  background: #ffffff;
+  border-color: #C9A050;
+  box-shadow: 0 0 0 3px rgba(201,160,80,.12);
+}
+
+.ah-profile-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 52px;
+  padding: 0 16px;
+  border-radius: 12px;
+  background: #FCF8F2;
+  border: 1px solid rgba(201,160,80,.14);
+}
+
+.ah-profile-summary span {
+  font-size: .76rem;
+  color: #8C7060;
+}
+
+.ah-profile-summary strong {
+  font-size: .78rem;
+  color: #2E1A0E;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.ah-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 14px;
+  margin-top: 2px;
+  border-top: 1px solid rgba(140,112,96,.10);
+}
+
+.ah-btn {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 18px;
+  border-radius: 12px;
+  font-family: 'Outfit', system-ui, sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .18s;
+}
+
+.ah-btn--ghost {
+  border: 1px solid rgba(140,112,96,.18);
+  background: #ffffff;
+  color: #5E412F;
+}
+
+.ah-btn--ghost:hover {
+  background: #FAF6F0;
+}
+
+.ah-btn--primary {
+  border: 1px solid #2E1A0E;
+  background: #2E1A0E;
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(46,26,14,.18);
+}
+
+.ah-btn--primary:hover:not(:disabled) {
+  background: #3D2512;
+}
+
+.ah-btn--primary:disabled {
+  opacity: .7;
+  cursor: not-allowed;
+}
+
+.ah-spin {
+  animation: ahSpin .8s linear infinite;
+}
+
+@keyframes ahSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .ah-header  { padding: 0 14px; height: 56px; }
+  .ah-search  { max-width: 160px; }
+  .ah-info, .ah-chevron, .ah-kbd { display: none; }
+  .ah-menu { right: -4px; width: min(260px, calc(100vw - 28px)); }
+  .ah-modal-overlay { align-items: flex-start; padding: 14px; }
+  .ah-modal__actions { flex-direction: column-reverse; }
+  .ah-btn { width: 100%; }
+}

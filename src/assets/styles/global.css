@@ -1,0 +1,188 @@
+/* src/assets/styles/global.css */
+@import "tailwindcss";
+:root {
+  /* Paleta de Colores Premium */
+  --color-primary: #064e3b; /* Verde Esmeralda Profundo */
+  --color-secondary: #d4af37; /* Dorado Elegante */
+  --color-dark: #1a1a1a; /* Negro Profundo para textos */
+  --color-light: #f8f9fa; /* Blanco Humo para fondos */
+  --color-accent: #059669; /* Un verde más brillante para botones */
+
+  /* Tipografía */
+  --font-family-base: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* ===== Admin (fallbacks; el sidebar aporta sus vars) ===== */
+  --admin-bg-1: #f7f0e8;
+  --admin-bg-2: #faf7f2;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family-base);
+  background-color: var(--color-light);
+  color: var(--color-dark);
+  line-height: 1.6;
+}
+
+/* Utilidad para imágenes responsivas */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ============================
+   ADMIN (solo UI)
+   Nota: el Sidebar define variables (e.g. --sb-w / --sb-wc) en su CSS.
+   Estas clases solo afectan el layout/admin, no la lógica.
+   ============================ */
+.adminShell {
+  min-height: 100vh;
+  background:
+    radial-gradient(1200px 700px at 15% 10%, rgba(201, 169, 110, 0.18), transparent 55%),
+    radial-gradient(900px 520px at 90% 15%, rgba(45, 26, 14, 0.07), transparent 52%),
+    linear-gradient(180deg, var(--admin-bg-1) 0%, #f9f5ee 55%, var(--admin-bg-2) 100%);
+}
+
+/* Área derecha (al lado del sidebar fijo) */
+.adminMain {
+  margin-left: var(--sb-w, 264px);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Topbar */
+.adminTopbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  padding: 18px 26px;
+
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(201, 169, 110, 0.35);
+}
+
+.adminTopbar__kicker {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #a8893a;
+}
+
+.adminTopbar__title {
+  margin: 4px 0 0;
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #2d1a0e;
+}
+
+.adminTopbar__right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.adminTopbar__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 8px 10px;
+  border-radius: 999px;
+
+  background: rgba(201, 169, 110, 0.14);
+  border: 1px solid rgba(201, 169, 110, 0.35);
+  color: #4a2e18;
+
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.adminTopbar__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #16a34a;
+  box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.12);
+}
+
+.adminTopbar__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+
+  background: linear-gradient(135deg, #c9a96e, #f2e7d4);
+  border: 1px solid rgba(201, 169, 110, 0.45);
+  color: #3d2b1a;
+
+  font-weight: 900;
+}
+
+/* Content */
+.adminContent {
+  padding: 22px 26px 40px;
+  flex: 1;
+}
+
+.adminContent__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+
+  background: rgba(255, 255, 255, 0.64);
+  border: 1px solid rgba(201, 169, 110, 0.24);
+  border-radius: 22px;
+  box-shadow:
+    0 26px 70px rgba(45, 26, 14, 0.10),
+    0 2px 0 rgba(201, 169, 110, 0.10);
+
+  padding: 28px;
+}
+
+/* Evita que páginas como Dashboard (que ya controlan su ancho) se vean “raras” */
+.adminContent__inner > .dashboard {
+  max-width: 100%;
+  padding-top: 0;
+}
+
+/* Responsive: sidebar colapsado */
+.sidebar--collapsed ~ .adminMain {
+  margin-left: var(--sb-wc, 72px);
+}
+
+@media (max-width: 768px) {
+  .adminMain {
+    margin-left: 0;
+    padding-bottom: 72px; /* espacio para sidebar bottom */
+  }
+
+  .adminTopbar {
+    position: static;
+    padding: 16px 14px;
+  }
+
+  .adminContent {
+    padding: 14px;
+  }
+
+  .adminContent__inner {
+    border-radius: 14px;
+    padding: 14px;
+  }
+}

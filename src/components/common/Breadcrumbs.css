@@ -1,0 +1,48 @@
+/* src/components/common/Breadcrumbs.css */
+.breadcrumbs-container {
+  margin-bottom: 20px;
+  padding: 5px 0;
+}
+
+.breadcrumbs-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.breadcrumb-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.breadcrumb-link {
+  color: #666;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.3s ease;
+}
+
+.breadcrumb-link:hover {
+  color: #d4af37; /* Dorado al pasar el mouse */
+}
+
+.home-link {
+  color: #d4af37; /* El icono de inicio siempre es dorado */
+}
+
+.breadcrumb-separator {
+  color: #ccc; /* La flechita divisora gris clara */
+}
+
+.breadcrumb-current {
+  color: #222;
+  font-weight: 600; /* Letra negrita para saber dónde estamos */
+}
