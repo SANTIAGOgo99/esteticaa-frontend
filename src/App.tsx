@@ -2,17 +2,17 @@
 import { Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 
-// Layouts
-
-
 // Páginas del Administrador
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminProducts from './pages/admin/AdminProducts';
 import AdminServices from './pages/admin/AdminServices';
 import AdminUsers from "./pages/admin/AdminUsers";
-import AdminAppointments from "./pages/admin/AdminAppointments"; // NUEVA PANTALLA DE CITAS
-import AdminBackups from './pages/admin/AdminBackups';
+import AdminAppointments from "./pages/admin/AdminAppointments";
+import AdminDatabase from './pages/admin/AdminDatabase';
+import AdminSiteContent from './pages/admin/AdminSiteContent';
+import AdminClients from './pages/admin/AdminClients';
 import AdminLayout from './components/admin/AdminLayout';
+import ProtectedRoute from './components/common/ProtectedRoute';
 
 // Páginas Públicas
 import Home from './pages/public/Home';
@@ -28,7 +28,6 @@ import ClientDashboard from "./pages/client/ClientDashboard";
 function App() {
   return (
     <>
-      {/* El Toaster es para que salgan las alertas verdes y rojas flotantes */}
       <Toaster position="top-right" reverseOrder={false} />
       
       <Routes>
@@ -40,25 +39,26 @@ function App() {
         <Route path="/cancelaciones" element={<Cancelaciones />} />
 
         {/* ================= Acceso Cliente ================= */}
-        <Route path="/mi-cuenta" element={<ClientDashboard />} />
+        <Route element={<ProtectedRoute allowedRoles={['client', 'employee']} unauthorizedPath="/admin/dashboard" />}>
+          <Route path="/mi-cuenta" element={<ClientDashboard />} />
+        </Route>
 
         {/* ================= Panel Administrativo ================= */}
-        <Route path="/admin" element={<AdminLayout />}>
-          {/* RUTA INDEX: Carga el Dashboard por defecto al entrar a /admin */}
-          <Route index element={<AdminDashboard />} />
-          
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="productos" element={<AdminProducts />} />
-          <Route path="servicios" element={<AdminServices />} />
-          <Route path="usuarios" element={<AdminUsers />} />
-          <Route path="respaldos" element={<AdminBackups />} />
-          
-          {/* NUEVA RUTA: La agenda del administrador */}
-          <Route path="citas" element={<AdminAppointments />} />
+        <Route element={<ProtectedRoute allowedRoles={['admin']} unauthorizedPath="/mi-cuenta" />}>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="productos" element={<AdminProducts />} />
+            <Route path="servicios" element={<AdminServices />} />
+            <Route path="clientes" element={<AdminClients />} />
+            <Route path="usuarios" element={<AdminUsers />} />
+            <Route path="sitio-web" element={<AdminSiteContent />} />
+            <Route path="base-datos" element={<AdminDatabase />} />
+            <Route path="citas" element={<AdminAppointments />} />
+          </Route>
         </Route>
 
         {/* ================= Pantalla de Error (404) ================= */}
-        {/* Esta SIEMPRE debe ir al final */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

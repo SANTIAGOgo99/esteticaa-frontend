@@ -1,43 +1,38 @@
 /* src/components/public/Navbar.css */
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500;600&display=swap');
 
 :root {
-  --nav-height: 76px;
-  --indigo-main: #4f46e5;
-  --indigo-hover: #4338ca;
-  --indigo-light: #e0e7ff;
-  --text-dark: #0f172a;
-  --text-gray: #64748b;
-  --border-color: #e2e8f0;
+  --nav-height:   78px;
+  --gold:         #b89a6a;
+  --gold-light:   #d4b896;
+  --gold-pale:    #f0e6d4;
+  --cocoa:        #3d2b1f;
+  --text-body:    #5a4a42;
+  --border-soft:  rgba(184, 154, 106, 0.18);
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body:    'DM Sans', system-ui, sans-serif;
 }
 
-/* =============================================
-   NAVBAR BASE (Estilo Glassmorphism Limpio)
-============================================= */
+/* ── Base ────────────────────────────────────────────────────────────────── */
 .public-navbar {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 0; left: 0; right: 0;
   height: var(--nav-height);
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(255, 253, 249, 0.82);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid transparent;
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  font-family: 'Inter', system-ui, sans-serif;
-  transition: all 0.3s ease;
+  font-family: var(--font-body);
+  transition: all 0.35s ease;
 }
-
-/* Al hacer scroll */
 .navbar--scrolled {
-  background: rgba(255, 255, 255, 0.98);
-  border-bottom: 1px solid var(--border-color);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  background: rgba(255, 253, 249, 0.97);
+  border-bottom: 1px solid var(--border-soft);
+  box-shadow: 0 4px 32px rgba(61, 43, 31, 0.06);
 }
 
 .navbar__container {
@@ -46,213 +41,126 @@
   justify-content: space-between;
   width: 100%;
   max-width: 1200px;
-  padding: 0 32px;
+  padding: 0 40px;
   height: 100%;
-  gap: 32px;
+  gap: 40px;
 }
 
-/* =============================================
-   LOGO Y MARCA
-============================================= */
+/* ── Logo ────────────────────────────────────────────────────────────────── */
 .navbar__logo-link {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  text-decoration: none;
-  flex-shrink: 0;
-  transition: opacity 0.2s;
+  display: flex; align-items: center; gap: 14px;
+  text-decoration: none; flex-shrink: 0; transition: opacity 0.25s;
 }
-
-.navbar__logo-link:hover {
-  opacity: 0.8;
-}
+.navbar__logo-link:hover { opacity: 0.78; }
 
 .navbar__logo-img {
-  height: 48px;
-  width: 48px;
-  object-fit: contain;
-  border-radius: 12px;
-  padding: 2px;
+  height: 46px; width: 46px; object-fit: contain;
+  border-radius: 10px; padding: 2px; background: white;
+  box-shadow: 0 2px 8px rgba(184, 154, 106, 0.12);
 }
 
-.navbar__brand {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
+.navbar__brand { display: flex; flex-direction: column; gap: 2px; }
 
 .navbar__brand-name {
-  font-size: 0.9rem;
-  font-weight: 800;
-  color: var(--text-dark);
-  letter-spacing: 0.5px;
-  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: 1.05rem; font-weight: 600;
+  color: var(--cocoa); letter-spacing: 2px; white-space: nowrap;
 }
-
 .navbar__brand-role {
-  font-size: 0.65rem;
-  color: var(--indigo-main);
-  letter-spacing: 1px;
-  font-weight: 600;
-  text-transform: uppercase;
+  font-family: var(--font-body);
+  font-size: 0.6rem; color: var(--gold);
+  letter-spacing: 2.5px; font-weight: 500; text-transform: uppercase;
 }
 
-/* =============================================
-   MENÚ (desktop)
-============================================= */
-.navbar__menu {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-}
-
-.navbar__links {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+/* ── Links ───────────────────────────────────────────────────────────────── */
+.navbar__menu { flex: 1; display: flex; justify-content: center; }
+.navbar__links { display: flex; align-items: center; gap: 4px; }
 
 .navbar__link {
   position: relative;
-  color: var(--text-gray);
+  color: var(--text-body);
   text-decoration: none;
-  font-size: 0.85rem;
-  font-weight: 600;
-  padding: 8px 16px;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.78rem; font-weight: 500;
+  letter-spacing: 1.8px; text-transform: uppercase;
+  padding: 8px 16px; transition: color 0.25s; cursor: pointer;
 }
-
-.navbar__link:hover {
-  color: var(--indigo-main);
-  background: var(--indigo-light);
+.navbar__link::after {
+  content: '';
+  position: absolute;
+  bottom: 4px; left: 16px; right: 16px;
+  height: 1px; background: var(--gold);
+  transform: scaleX(0); transition: transform 0.3s ease;
 }
+.navbar__link:hover { color: var(--cocoa); }
+.navbar__link:hover::after { transform: scaleX(1); }
 
-/* =============================================
-   BOTÓN AGENDAR (Estilo SaaS)
-============================================= */
+/* ── CTA ─────────────────────────────────────────────────────────────────── */
 .navbar__cta-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 20px;
-  background: var(--indigo-main);
-  color: white;
-  font-size: 0.85rem;
-  font-weight: 600;
-  font-family: 'Inter', sans-serif;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-  flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 24px; background: transparent; color: var(--cocoa);
+  font-family: var(--font-body); font-size: 0.7rem; font-weight: 500;
+  letter-spacing: 2.5px; text-transform: uppercase; border: 1px solid var(--gold);
+  cursor: pointer; transition: all 0.3s ease; white-space: nowrap;
+  flex-shrink: 0; position: relative; overflow: hidden;
 }
-
-.navbar__cta-btn:hover {
-  background: var(--indigo-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.3);
+.navbar__cta-btn::before {
+  content: ''; position: absolute; inset: 0; background: var(--gold);
+  transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease; z-index: -1;
 }
+.navbar__cta-btn:hover { color: #fff; }
+.navbar__cta-btn:hover::before { transform: scaleX(1); }
+.navbar__cta-btn--mobile { display: none; }
 
-.navbar__cta-btn--mobile {
-  display: none;
-}
-
-/* =============================================
-   HAMBURGUESA (solo mobile)
-============================================= */
+/* ── Hamburger ───────────────────────────────────────────────────────────── */
 .navbar__hamburger {
-  display: none;
-  background: transparent;
-  border: 1px solid var(--border-color);
-  color: var(--text-dark);
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: all 0.2s;
+  display: none; background: transparent; border: 1px solid var(--border-soft);
+  color: var(--cocoa); width: 42px; height: 42px;
+  align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0; transition: all 0.25s;
 }
+.navbar__hamburger:hover { border-color: var(--gold); color: var(--gold); }
+.navbar__mobile-overlay { display: none; }
 
-.navbar__hamburger:hover {
-  border-color: var(--indigo-main);
-  color: var(--indigo-main);
-  background: var(--indigo-light);
-}
-
-.navbar__mobile-overlay {
-  display: none;
-}
-
-/* =============================================
-   RESPONSIVE — MOBILE
-============================================= */
+/* ── Mobile ──────────────────────────────────────────────────────────────── */
 @media (max-width: 960px) {
-  .public-navbar { height: 70px; }
-  :root { --nav-height: 70px; }
+  .public-navbar { height: 68px; }
+  :root { --nav-height: 68px; }
   .navbar__container { padding: 0 20px; }
-
   .navbar__hamburger { display: flex; }
   .navbar__cta-btn--desktop { display: none; }
 
-  /* Panel lateral deslizante */
   .navbar__menu {
-    position: fixed;
-    top: 0;
-    right: -100%;
-    width: 280px;
-    height: 100vh;
-    background: #ffffff;
-    border-left: 1px solid var(--border-color);
-    box-shadow: -8px 0 32px rgba(0, 0, 0, 0.1);
-    flex-direction: column;
-    justify-content: flex-start;
-    z-index: 1001;
-    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: fixed; top: 0; right: -100%;
+    width: 280px; height: 100vh;
+    background: rgba(255, 253, 249, 0.98);
+    backdrop-filter: blur(20px);
+    border-left: 1px solid var(--border-soft);
+    box-shadow: -8px 0 32px rgba(61, 43, 31, 0.08);
+    flex-direction: column; justify-content: flex-start;
+    z-index: 1001; transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     padding-top: var(--nav-height);
   }
-
   .navbar__menu--open { right: 0; }
-
-  /* Overlay oscuro de fondo */
   .navbar__menu--open .navbar__mobile-overlay {
-    display: block;
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.4);
+    display: block; position: fixed; inset: 0;
+    background: rgba(61, 43, 31, 0.35);
     backdrop-filter: blur(2px);
-    z-index: -1;
-    right: 100%;
-    width: 100vw;
+    z-index: -1; right: 100%; width: 100vw;
   }
-
   .navbar__links {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 20px;
-    gap: 10px;
-    width: 100%;
+    flex-direction: column; align-items: stretch;
+    padding: 24px 20px; gap: 4px; width: 100%;
   }
-
   .navbar__link {
-    font-size: 0.95rem;
-    padding: 12px 16px;
+    font-size: 0.82rem; padding: 13px 12px;
+    border-bottom: 1px solid var(--border-soft);
   }
-
+  .navbar__link:last-of-type { border-bottom: none; }
   .navbar__cta-btn--mobile {
-    display: flex;
-    width: 100%;
-    margin-top: 15px;
-    padding: 14px;
+    display: flex; width: 100%; margin-top: 20px;
+    padding: 14px; justify-content: center;
   }
-
   .navbar__brand { display: none; }
   .navbar__logo-img { height: 40px; width: 40px; }
 }

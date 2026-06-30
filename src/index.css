@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-family-base: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-sans: var(--font-family-base);
+    --font-serif: var(--font-family-base);
+    --font-mono: var(--font-family-base);
+  }
+
+  html,
+  body,
+  #root {
+    font-family: var(--font-family-base);
+  }
+
+  *,
+  *::before,
+  *::after {
+    font-family: var(--font-family-base) !important;
+  }
+
+  body,
+  button,
+  input,
+  textarea,
+  select,
+  option,
+  table,
+  dialog {
+    font-family: var(--font-family-base) !important;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  span,
+  a,
+  label,
+  small,
+  strong,
+  th,
+  td,
+  code,
+  pre,
+  kbd {
+    font-family: inherit;
+  }
+}
+
+@layer utilities {
+  .font-sans,
+  .font-serif,
+  .font-mono,
+  .td-mono {
+    font-family: var(--font-family-base) !important;
+  }
+}

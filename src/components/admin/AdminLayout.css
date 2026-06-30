@@ -1,62 +1,25 @@
 /* src/components/admin/AdminLayout.css */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
-/* ─────────────────────────────────────────
-   LAYOUT RAÍZ
-───────────────────────────────────────── */
 .saas-admin-layout {
   display: flex;
-  min-height: 100vh;
-  background: #f1f5f9;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background-color: #FAF6F0; /* Ivory base */
 }
 
-/* ─────────────────────────────────────────
-   ZONA PRINCIPAL
-   margin-left debe coincidir exactamente
-   con --asb-w (260px) y --asb-wc (72px)
-───────────────────────────────────────── */
 .saas-admin-main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  margin-left: 260px;           /* = --asb-w */
-  min-width: 0;
-  min-height: 100vh;
-  transition: margin-left 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 0; /* Previene que el contenido expanda la pantalla de más */
+  height: 100vh;
+  overflow: hidden;
 }
 
-/* Sidebar colapsado → 72px */
-.saas-admin-main.collapsed {
-  margin-left: 72px;            /* = --asb-wc */
-}
-
-/* ─────────────────────────────────────────
-   ÁREA DE CONTENIDO
-───────────────────────────────────────── */
 .saas-admin-content {
   flex: 1;
-  padding: 28px 36px;
   overflow-y: auto;
   overflow-x: hidden;
-  background:
-    radial-gradient(ellipse at top right, rgba(59,130,246,.03) 0%, transparent 60%),
-    #f1f5f9;
-}
-
-/* ─────────────────────────────────────────
-   RESPONSIVE MÓVIL
-───────────────────────────────────────── */
-@media (max-width: 768px) {
-  /* En móvil el sidebar se convierte en barra inferior */
-  .saas-admin-main,
-  .saas-admin-main.collapsed {
-    margin-left: 0;
-    padding-bottom: 72px;       /* espacio para la barra inferior */
-  }
-
-  .saas-admin-content {
-    padding: 18px 16px;
-  }
+  background-color: #FAF6F0; /* Ivory base */
 }

@@ -9,7 +9,10 @@ const routeNames: Record<string, string> = {
   'mi-cuenta': 'Mi Panel',
   'productos': 'Productos',
   'servicios': 'Servicios',
+  'clientes': 'Clientes',
   'usuarios': 'Usuarios',
+  'sitio-web': 'Sitio web',
+  'base-datos': 'Base de datos',
 };
 
 const Breadcrumbs = () => {

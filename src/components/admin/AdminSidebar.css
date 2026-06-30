@@ -421,3 +421,43 @@
   .asb__link-label { display: block !important; font-size: .62rem; }
   .asb__footer { display: none; }
 }
+
+/* Footer used by the current Tailwind-based sidebar markup. These selectors
+   keep the actions readable even when page-level admin themes are imported. */
+.admin-sidebar-footer {
+  background: #1E1108;
+}
+
+.admin-sidebar-footer-btn {
+  background: transparent !important;
+  border-color: transparent !important;
+}
+
+.admin-sidebar-footer-btn .admin-sidebar-footer-icon {
+  color: rgba(255, 255, 255, .42) !important;
+  stroke: currentColor !important;
+}
+
+.admin-sidebar-footer-btn .admin-sidebar-footer-label {
+  color: rgba(255, 255, 255, .52) !important;
+}
+
+.admin-sidebar-footer-btn--toggle:hover {
+  background: rgba(201, 160, 80, .10) !important;
+  border-color: rgba(201, 160, 80, .18) !important;
+}
+
+.admin-sidebar-footer-btn--toggle:hover .admin-sidebar-footer-icon,
+.admin-sidebar-footer-btn--toggle:hover .admin-sidebar-footer-label {
+  color: rgba(255, 255, 255, .82) !important;
+}
+
+.admin-sidebar-footer-btn--logout:hover {
+  background: rgba(239, 68, 68, .14) !important;
+  border-color: rgba(239, 68, 68, .24) !important;
+}
+
+.admin-sidebar-footer-btn--logout:hover .admin-sidebar-footer-icon,
+.admin-sidebar-footer-btn--logout:hover .admin-sidebar-footer-label {
+  color: #F87171 !important;
+}

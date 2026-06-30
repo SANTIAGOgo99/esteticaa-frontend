@@ -1,0 +1,222 @@
+.site-content-page {
+  width: 100%;
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 32px 40px;
+  color: #2f1b10;
+}
+
+.site-content-loading {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #7a614c;
+  font-weight: 800;
+}
+
+.site-content-loading svg,
+.site-spin {
+  animation: site-spin 0.9s linear infinite;
+}
+
+@keyframes site-spin {
+  to { transform: rotate(360deg); }
+}
+
+.site-content-header {
+  margin-bottom: 22px;
+  padding: 30px 34px;
+  border: 1px solid rgba(201, 160, 80, 0.22);
+  border-radius: 22px;
+  background:
+    linear-gradient(135deg, rgba(46, 26, 14, 0.96), rgba(86, 52, 30, 0.92)),
+    radial-gradient(circle at 95% 0%, rgba(232, 200, 120, 0.22), transparent 30%);
+  box-shadow: 0 18px 48px rgba(46, 26, 14, 0.14);
+}
+
+.site-content-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #e8c878;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.site-content-header h1 {
+  margin: 9px 0 7px;
+  color: #fff8ed;
+  font-size: 2rem;
+  line-height: 1.1;
+}
+
+.site-content-header p {
+  margin: 0;
+  max-width: 760px;
+  color: rgba(255, 248, 237, 0.74);
+  font-size: 0.95rem;
+}
+
+.site-content-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.site-content-card {
+  background: #fffaf4;
+  border: 1px solid rgba(201, 160, 80, 0.22);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 12px 30px rgba(46, 26, 14, 0.07);
+}
+
+.site-content-card--location {
+  grid-column: 1 / -1;
+}
+
+.site-content-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.site-content-card-head span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #c07a60;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.site-content-card-head h2 {
+  margin: 5px 0 0;
+  color: #2f1b10;
+  font-size: 1.25rem;
+}
+
+.site-content-card-head button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #2f1b10;
+  border-radius: 12px;
+  padding: 10px 14px;
+  background: #2f1b10;
+  color: #fff8ed;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+.site-content-card-head button:hover:not(:disabled) {
+  background: #c9a050;
+  border-color: #c9a050;
+  color: #2f1b10;
+  transform: translateY(-1px);
+}
+
+.site-content-card-head button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.site-content-card textarea,
+.site-content-card input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(140, 112, 96, 0.2);
+  border-radius: 14px;
+  background: #fff;
+  color: #2f1b10;
+  font: inherit;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+
+.site-content-card textarea {
+  min-height: 260px;
+  padding: 16px;
+  resize: vertical;
+}
+
+.site-content-card input {
+  height: 46px;
+  padding: 0 14px;
+}
+
+.site-content-card textarea:focus,
+.site-content-card input:focus {
+  border-color: #c9a050;
+  box-shadow: 0 0 0 3px rgba(201, 160, 80, 0.16);
+}
+
+.site-location-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.85fr) minmax(360px, 1fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.site-location-form {
+  display: grid;
+  gap: 14px;
+}
+
+.site-location-form label {
+  display: grid;
+  gap: 8px;
+  color: #5e412f;
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.site-location-form label span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.site-location-form textarea {
+  min-height: 120px;
+}
+
+.site-map-preview {
+  min-height: 420px;
+  padding: 10px;
+  border-radius: 22px;
+  background: #fff;
+  border: 1px solid rgba(201, 160, 80, 0.26);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+}
+
+.site-map-preview iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 16px;
+  min-height: 400px;
+}
+
+@media (max-width: 980px) {
+  .site-content-grid,
+  .site-location-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .site-content-page {
+    padding: 22px 18px;
+  }
+}

@@ -85,3 +85,132 @@
   .hide-mobile { display: none; }
   .saas-modal-actions { flex-direction: column; }
 }
+
+/* Brown/gold admin theme override for the services module */
+.admin-services-page {
+  --ec-brown-900: #2E1A0E;
+  --ec-brown-800: #3D2512;
+  --ec-brown-700: #5E412F;
+  --ec-brown-500: #8C7060;
+  --ec-gold-600: #C9A050;
+  --ec-gold-500: #D9AF5F;
+  --ec-cream-50: #FFFCF7;
+  --ec-cream-100: #FAF6F0;
+  --ec-cream-200: #F2E9DC;
+  --ec-border: rgba(201, 160, 80, .20);
+  --ec-shadow: 0 14px 34px rgba(61, 37, 18, .08);
+  color: var(--ec-brown-900);
+}
+
+.admin-services-page .text-indigo-600,
+.admin-services-page .text-slate-800 {
+  color: var(--ec-brown-900) !important;
+}
+
+.admin-services-page .text-slate-500,
+.admin-services-page .text-slate-600,
+.admin-services-page .text-slate-700 {
+  color: var(--ec-brown-500) !important;
+}
+
+.admin-services-page p.uppercase {
+  color: var(--ec-gold-600) !important;
+}
+
+.admin-services-page .rounded-2xl.border,
+.admin-services-page .border-slate-200 {
+  border-color: var(--ec-border) !important;
+}
+
+.admin-services-page .shadow-sm {
+  box-shadow: var(--ec-shadow) !important;
+}
+
+.admin-services-page button[class*="bg-amber-500"] {
+  background: var(--ec-brown-900) !important;
+  color: #fff !important;
+  border: 1px solid var(--ec-brown-900) !important;
+  box-shadow: 0 12px 24px rgba(46, 26, 14, .16) !important;
+}
+
+.admin-services-page button[class*="bg-amber-500"]:hover {
+  background: var(--ec-gold-600) !important;
+  border-color: var(--ec-gold-600) !important;
+  color: var(--ec-brown-900) !important;
+  transform: translateY(-1px);
+}
+
+.admin-services-page input {
+  background: var(--ec-cream-50) !important;
+  border-color: rgba(140, 112, 96, .18) !important;
+  color: var(--ec-brown-900) !important;
+}
+
+.admin-services-page input:focus {
+  background: #fff !important;
+  box-shadow: 0 0 0 3px rgba(201, 160, 80, .16) !important;
+  border-color: var(--ec-gold-600) !important;
+}
+
+.admin-services-page button[class*="bg-indigo-600"] {
+  background: var(--ec-gold-600) !important;
+  color: var(--ec-brown-900) !important;
+  box-shadow: 0 8px 18px rgba(201, 160, 80, .22) !important;
+}
+
+.admin-services-page button[class*="bg-slate-100"] {
+  background: var(--ec-cream-100) !important;
+  color: var(--ec-brown-700) !important;
+}
+
+.admin-services-page button[class*="bg-slate-100"]:hover {
+  background: var(--ec-cream-200) !important;
+  color: var(--ec-brown-900) !important;
+}
+
+.admin-services-page thead tr,
+.admin-services-page .bg-slate-50 {
+  background: var(--ec-cream-100) !important;
+}
+
+.admin-services-page th {
+  color: var(--ec-brown-500) !important;
+  border-bottom-color: var(--ec-border) !important;
+}
+
+.admin-services-page tbody tr:hover {
+  background: #fffaf3 !important;
+}
+
+.admin-services-page span[class*="bg-indigo-50"] {
+  background: rgba(201, 160, 80, .12) !important;
+  border-color: rgba(201, 160, 80, .24) !important;
+  color: var(--ec-brown-800) !important;
+}
+
+.admin-services-page span[class*="bg-slate-100"] {
+  background: var(--ec-cream-200) !important;
+  color: var(--ec-brown-700) !important;
+}
+
+.admin-services-page .text-emerald-600 {
+  color: #00796b !important;
+}
+
+.admin-services-page span[class*="bg-emerald-100"] {
+  background: #E9F7EF !important;
+  color: #047857 !important;
+}
+
+.admin-services-page span[class*="bg-rose-100"] {
+  background: #FFF1EE !important;
+  color: #B42318 !important;
+}
+
+.admin-services-page button[title="Editar"] {
+  color: var(--ec-gold-600) !important;
+}
+
+.admin-services-page button[title="Editar"]:hover {
+  background: rgba(201, 160, 80, .12) !important;
+}

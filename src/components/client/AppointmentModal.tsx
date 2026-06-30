@@ -1,111 +1,232 @@
-// src/components/client/AppointmentModal.tsx
-import { useState } from 'react';
-import { X, Calendar, Clock, Scissors } from 'lucide-react';
-import './AppointmentModal.css';
+import { useEffect, useState } from 'react';
+import {
+  X,
+  Calendar,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+} from 'lucide-react';
+import api from '../../services/api';
 
 interface Servicio {
   id: number;
   name: string;
-  duration_minutes: number;
+  description: string;
   price: string | number;
+  duration_minutes: number;
+  image_url?: string;
+  category?: string;
+}
+
+interface Slot {
+  time: string;
+  appointment_date: string;
+  available: boolean;
 }
 
 interface AppointmentModalProps {
   isOpen: boolean;
   onClose: () => void;
   service: Servicio | null;
-  onConfirm: (fecha: string, hora: string) => void;
+  onConfirm: (fecha: string, hora: string) => Promise<void>;
 }
 
-const AppointmentModal = ({ isOpen, onClose, service, onConfirm }: AppointmentModalProps) => {
-  const [fecha, setFecha] = useState('');
-  const [hora, setHora] = useState('');
+const AppointmentModal = ({
+  isOpen,
+  onClose,
+  service,
+  onConfirm,
+}: AppointmentModalProps) => {
+  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedHour, setSelectedHour] = useState('');
+  const [slots, setSlots] = useState<Slot[]>([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const [message, setMessage] = useState('');
 
-  // Horas simuladas (Después el backend te dirá cuáles están libres)
-  const horasDisponibles = [
-    '10:00', '11:00', '12:00', '13:00', '16:00', '17:00', '18:00'
-  ];
+  const today = new Date().toISOString().split('T')[0];
+
+  useEffect(() => {
+    if (!isOpen) {
+      setSelectedDate('');
+      setSelectedHour('');
+      setSlots([]);
+      setMessage('');
+      setConfirming(false);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    const fetchSlots = async () => {
+      if (!selectedDate || !service) return;
+
+      try {
+        setLoadingSlots(true);
+        setSelectedHour('');
+        setMessage('');
+
+        const res = await api.get('/appointments/slots', {
+          params: {
+            date: selectedDate,
+            service_id: service.id,
+          },
+        });
+
+        const availableSlots = res.data.available_slots || [];
+        setSlots(availableSlots);
+
+        if (availableSlots.length === 0) {
+          setMessage(
+            res.data.message || 'No hay horarios disponibles para este día.'
+          );
+        }
+      } catch (error: any) {
+        console.error(error);
+
+        const mensaje =
+          error.response?.data?.message ||
+          'No se pudieron cargar los horarios disponibles.';
+
+        setSlots([]);
+        setMessage(mensaje);
+      } finally {
+        setLoadingSlots(false);
+      }
+    };
+
+    fetchSlots();
+  }, [selectedDate, service]);
 
   if (!isOpen || !service) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!fecha || !hora) {
-      alert("Por favor selecciona una fecha y una hora.");
+  const handleConfirm = async () => {
+    if (!selectedDate || !selectedHour) {
+      setMessage('Selecciona una fecha y un horario para continuar.');
       return;
     }
-    onConfirm(fecha, hora);
-    setFecha('');
-    setHora('');
+
+    try {
+      setConfirming(true);
+      setMessage('');
+
+      await onConfirm(selectedDate, selectedHour);
+    } catch (error: any) {
+      console.error(error);
+
+      const mensaje =
+        error.response?.data?.message ||
+        'No se pudo agendar la cita. Intenta de nuevo.';
+
+      setMessage(mensaje);
+    } finally {
+      setConfirming(false);
+    }
   };
 
-  // MAGIA 1: Obtenemos la fecha de HOY para bloquear el pasado
-  const hoy = new Date().toISOString().split('T')[0];
-
   return (
-    <div className="saas-modal-overlay">
-      <div className="saas-modal-card">
-        
-        <button className="saas-close-btn" onClick={onClose}>
+    <div className="appointment-modal-overlay">
+      <div className="appointment-modal">
+        <button className="appointment-close-btn" onClick={onClose}>
           <X size={20} />
         </button>
 
-        <div className="saas-modal-header">
-          <h2>Agendar Cita</h2>
-          <p>Estás a un paso de reservar tu espacio.</p>
+        <div className="appointment-modal-header">
+          <span className="section-badge">Reservar cita</span>
+          <h2>{service.name}</h2>
+          <p>{service.description}</p>
         </div>
 
-        <div className="saas-service-summary">
-          <div className="summary-icon"><Scissors size={20} /></div>
-          <div className="summary-info">
-            <h4>{service.name}</h4>
-            <p>Duración aprox: {service.duration_minutes} min | ${Number(service.price).toFixed(2)}</p>
+        <div className="appointment-summary">
+          <div>
+            <Clock size={16} />
+            <span>{service.duration_minutes} min</span>
+          </div>
+
+          <div>
+            <CheckCircle size={16} />
+            <span>${Number(service.price).toFixed(2)}</span>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="saas-modal-form">
-          <div className="saas-form-group">
-            <label><Calendar size={16} /> Selecciona la Fecha</label>
-            <input 
-              type="date" 
-              min={hoy} /* Bloquea los días que ya pasaron */
-              required 
-              value={fecha} 
-              onChange={(e) => setFecha(e.target.value)}
-              /* MAGIA 2: Obligamos al navegador a mostrar el calendario al darle clic */
-              onClick={(e) => {
-                if ('showPicker' in HTMLInputElement.prototype) {
-                  e.currentTarget.showPicker();
-                }
-              }}
-              className="saas-input-date"
-            />
-          </div>
+        <div className="appointment-field">
+          <label>
+            <Calendar size={16} />
+            Selecciona el día
+          </label>
 
-          <div className="saas-form-group">
-            <label><Clock size={16} /> Horarios Disponibles</label>
-            <div className="saas-time-grid">
-              {horasDisponibles.map((h) => (
-                <button
-                  key={h}
-                  type="button"
-                  className={`saas-time-btn ${hora === h ? 'selected' : ''}`}
-                  onClick={() => setHora(h)}
-                >
-                  {h}
-                </button>
-              ))}
-            </div>
-          </div>
+          <input
+            type="date"
+            min={today}
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+          />
+        </div>
 
-          <div className="saas-modal-actions">
-            <button type="button" className="btn-saas-outline" onClick={onClose}>Cancelar</button>
-            <button type="submit" className="btn-saas-primary" disabled={!fecha || !hora}>
-              Solicitar Cita
-            </button>
-          </div>
-        </form>
+        {selectedDate && (
+          <div className="appointment-field">
+            <label>
+              <Clock size={16} />
+              Horarios disponibles
+            </label>
 
+            {loadingSlots ? (
+              <div className="slots-loading">Cargando horarios...</div>
+            ) : slots.length > 0 ? (
+              <div className="slots-grid">
+                {slots.map((slot) => (
+                  <button
+                    key={slot.appointment_date}
+                    className={`slot-button ${
+                      selectedHour === slot.time ? 'selected' : ''
+                    }`}
+                    onClick={() => setSelectedHour(slot.time)}
+                    type="button"
+                  >
+                    {slot.time}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="appointment-alert">
+                <AlertCircle size={16} />
+                <span>{message || 'No hay horarios disponibles.'}</span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {selectedDate && selectedHour && (
+          <div className="appointment-confirm-box">
+            <strong>Resumen de tu cita</strong>
+            <p>Servicio: {service.name}</p>
+            <p>Fecha: {selectedDate}</p>
+            <p>Hora: {selectedHour}</p>
+            <p>Duración: {service.duration_minutes} minutos</p>
+            <p>Total aproximado: ${Number(service.price).toFixed(2)}</p>
+            <p>La cita quedara confirmada automaticamente al agendar.</p>
+          </div>
+        )}
+
+        {message && slots.length > 0 && (
+          <div className="appointment-alert">
+            <AlertCircle size={16} />
+            <span>{message}</span>
+          </div>
+        )}
+
+        <div className="appointment-actions">
+          <button className="appointment-secondary-btn" onClick={onClose}>
+            Cancelar
+          </button>
+
+          <button
+            className="appointment-primary-btn"
+            onClick={handleConfirm}
+            disabled={!selectedDate || !selectedHour || confirming}
+          >
+            {confirming ? 'Agendando...' : 'Agendar cita'}
+          </button>
+        </div>
       </div>
     </div>
   );
