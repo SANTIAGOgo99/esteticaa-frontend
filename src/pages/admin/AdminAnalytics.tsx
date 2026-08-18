@@ -270,17 +270,8 @@ function nombreMesAnio(isoDate: string) {
   return `${meses[d.getMonth()]} ${d.getFullYear()}`;
 }
 
-function sumarDiasISO(iso: string, dias: number) {
-  const d = new Date(iso + 'T00:00:00');
-  d.setDate(d.getDate() + dias);
-  return formatFechaISO(d);
-}
 
-function diferenciaDiasISO(inicio: string, fin: string) {
-  const a = new Date(inicio + 'T00:00:00').getTime();
-  const b = new Date(fin + 'T00:00:00').getTime();
-  return Math.round((b - a) / 86400000);
-}
+
 
 function esDomingoISO(fechaISO: string) {
   const d = new Date(fechaISO + 'T00:00:00');
@@ -351,10 +342,6 @@ function getMesInfo(iso: string) {
   };
 }
 
-function obtenerCategoriaDeServicio(servicio: string) {
-  const encontrada = Object.entries(CAT_SERVICIOS).find(([, servicios]) => servicios.includes(servicio));
-  return encontrada ? encontrada[0] : 'General';
-}
 
 function obtenerDemandaBasePorFecha(fecha: Date) {
   const mes = fecha.getMonth() + 1;
