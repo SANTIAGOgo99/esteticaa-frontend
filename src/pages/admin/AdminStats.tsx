@@ -610,7 +610,7 @@ const AdminStats = () => {
               <p className="amp-card-label">Detalle de Conexiones</p>
               <p className="amp-card-desc">Conteo por tipo de estado</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
-                {s.connectionsByState.map((c, i) => {
+                {s.connectionsByState.map((c) => {
                   const stateName = translateState(c.state);
                   const colorHex = CONN_COLORS[getConnColorIndex(stateName)];
                   return (
