@@ -106,8 +106,8 @@ const ClientAppointments = ({ initialView = 'list' }: Props) => {
       <div className="client-appointment-main"><div className="client-appointment-icon"><Scissors size={22}/></div><div><span className={`client-status-pill ${statusClass(statusOf(item))}`}>{statusLabel(statusOf(item))}</span><h3>{serviceName(item)}</h3><p>{dateLabel(item)}</p></div></div>
       <div className="client-appointment-meta"><span><Clock size={15}/>{hourLabel(item)}</span><strong>${money(item.price ?? item.total_amount)}</strong></div>
       <dl className="client-appointment-details">{(item.service_category || item.category) && <div><dt>Categoría</dt><dd>{item.service_category || item.category}</dd></div>}{(item.duration ?? item.duration_minutes) != null && <div><dt>Duración</dt><dd>{item.duration ?? item.duration_minutes} minutos</dd></div>}{item.origin && <div><dt>Origen</dt><dd>{item.origin}</dd></div>}</dl>
-      {active(item) && remaining && <div className="client-appointment-context client-appointment-context--time"><Clock size={15}/><span>{remaining}</span></div>}
-      {active(item) && item.can_reschedule === true && deadline && <div className="client-appointment-context client-appointment-context--deadline"><RefreshCw size={15}/><span>Puedes reagendar hasta: {deadline}</span></div>}
+      {active(item) && remaining && <p className="client-reschedule-reason">{remaining}</p>}
+      {active(item) && item.can_reschedule === true && deadline && <p className="client-reschedule-reason">Puedes reagendar hasta: {deadline}</p>}
       {active(item) && <div className="client-appointment-actions"><button type="button" className="client-reschedule-appointment" disabled={item.can_reschedule !== true} onClick={item.can_reschedule === true ? () => setRescheduling(item) : undefined}><RefreshCw size={16}/>Reagendar</button><button type="button" className="client-cancel-appointment" onClick={() => cancel(item)}><XCircle size={16}/>Cancelar cita</button></div>}
       {item.can_reschedule === false && <p className="client-reschedule-reason">{item.reschedule_reason || 'Esta cita no se puede reagendar.'}</p>}
     </article>;
