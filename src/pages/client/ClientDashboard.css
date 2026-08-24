@@ -1128,6 +1128,19 @@ body {
 
 .client-reschedule-appointment:hover { border-color: #b8860b; color: #1a1a1a; }
 
+.client-reschedule-appointment:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: #e8e0d5;
+}
+
+.client-reschedule-reason {
+  margin: 0.65rem 0 0;
+  color: #8b5e3c;
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+
 .appointment-modal-backdrop {
   position: fixed;
   inset: 0;

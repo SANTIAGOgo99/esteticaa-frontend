@@ -3,6 +3,7 @@ import useSWR from 'swr';
 import { AlertCircle, Calendar, CheckCircle, Clock, Scissors, Search } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
+import { getApiMessage, isSunday, isValidAppointmentDate, localDateKey, type AppointmentSlot } from './appointmentUtils';
 
 const fetcher = (url: string) => api.get(url).then((res) => res.data);
 
@@ -13,14 +14,6 @@ interface Service {
   price: string | number;
   duration_minutes: number;
   category?: string;
-}
-
-export interface AppointmentSlot {
-  time: string;
-  appointment_date: string;
-  appointment_end?: string;
-  available?: boolean;
-  reason?: string;
 }
 
 interface SlotsResponse {
@@ -35,14 +28,6 @@ interface SlotsResponse {
 
 interface Props { onAppointmentCreated?: () => void }
 
-export const getApiMessage = (error: unknown, fallback: string) => {
-  if (typeof error === 'object' && error && 'response' in error) {
-    const response = (error as { response?: { data?: { message?: unknown } } }).response;
-    if (typeof response?.data?.message === 'string') return response.data.message;
-  }
-  return fallback;
-};
-
 const money = (value: string | number | undefined) => Number(value || 0).toFixed(2);
 const longDate = (date: string) => date
   ? new Date(`${date}T12:00:00`).toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
@@ -55,7 +40,7 @@ const normalizeSlots = (values: SlotsResponse['available_slots'], date: string):
 
 const ClientBookAppointment = ({ onAppointmentCreated }: Props) => {
   const { data, isLoading, error } = useSWR('/services/active', fetcher);
-  const services: Service[] = Array.isArray(data) ? data : data?.services || [];
+  const services: Service[] = useMemo(() => Array.isArray(data) ? data : data?.services || [], [data]);
   const [step, setStep] = useState(1);
   const [search, setSearch] = useState('');
   const [serviceId, setServiceId] = useState<number | null>(null);
@@ -98,7 +83,7 @@ const ClientBookAppointment = ({ onAppointmentCreated }: Props) => {
     try {
       setSaving(true);
       await api.post('/appointments', { service_id: serviceId, appointment_date: slot.appointment_date, deposit_amount: 0 });
-      toast.success('Cita registrada correctamente.');
+      toast.success('Tu cita fue registrada correctamente. Recuerda que puedes reagendarla únicamente hasta 24 horas antes de la cita.', { duration: 6500 });
       setServiceId(null); setDate(''); setSlot(null); setSlots([]); setSearch(''); setStep(1);
       onAppointmentCreated?.();
     } catch (requestError) {
@@ -120,7 +105,7 @@ const ClientBookAppointment = ({ onAppointmentCreated }: Props) => {
     <div className="booking-wizard-layout">
       <section className="booking-panel booking-wizard-panel">
         {step === 1 && <><div className="booking-panel-title"><Scissors size={20}/><h2>1. Elige un servicio</h2></div><div className="booking-search"><Search size={17}/><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar servicio..." /></div>{isLoading && <div className="booking-message">Cargando servicios...</div>}{error && <div className="booking-message error">No se pudieron cargar los servicios.</div>}<div className="booking-service-list booking-service-list--wizard">{filtered.map((item) => <button type="button" key={item.id} className="booking-service-option" onClick={() => selectService(item)}><div><strong>{item.name}</strong><span>{item.description}</span></div><div className="booking-service-meta"><span>{item.duration_minutes} minutos</span><b>${money(item.price)}</b></div></button>)}</div></>}
-        {step === 2 && <><div className="booking-panel-title"><Calendar size={20}/><h2>2. Elige el día</h2></div><div className="booking-selected-service"><strong>{serviceName}</strong><span>{duration} minutos · ${money(shownService?.price)}</span></div><label className="booking-date-label">Fecha<input className="booking-date-input" type="date" value={date} onChange={(e) => { setDate(e.target.value); setStep(3); }} /></label><div className="booking-warning-box"><AlertCircle size={18}/><span>Los horarios y días de apertura serán determinados por la agenda del negocio.</span></div></>}
+        {step === 2 && <><div className="booking-panel-title"><Calendar size={20}/><h2>2. Elige el día</h2></div><div className="booking-selected-service"><strong>{serviceName}</strong><span>{duration} minutos · ${money(shownService?.price)}</span></div><label className="booking-date-label">Fecha<input className="booking-date-input" type="date" min={localDateKey()} value={date} onChange={(e) => { const nextDate = e.target.value; if (!isValidAppointmentDate(nextDate)) { setDate(''); toast.error(isSunday(nextDate) ? 'Los domingos la estética permanece cerrada.' : 'Selecciona una fecha a partir de hoy.'); return; } setDate(nextDate); setStep(3); }} /></label><div className="booking-warning-box"><AlertCircle size={18}/><span>No se permiten fechas pasadas ni domingos. Los horarios disponibles serán determinados por la agenda del negocio.</span></div></>}
         {step === 3 && <><div className="booking-panel-title"><Clock size={20}/><h2>3. Elige un horario</h2></div><div className="booking-selected-service"><strong>{longDate(date)}</strong><span>{serviceName}</span></div>{loadingSlots && <div className="booking-message">Consultando disponibilidad...</div>}{!loadingSlots && slots.length === 0 && <div className="booking-message">No existen horarios disponibles para este día. El negocio puede estar cerrado o la agenda completa.</div>}<div className="booking-slots-grid booking-slots-grid--wizard">{slots.map((item) => <button key={`${item.appointment_date}-${item.time}`} type="button" className={`booking-slot available ${slot?.appointment_date === item.appointment_date ? 'selected' : ''}`} onClick={() => { setSlot(item); setStep(4); }}><strong>{item.time}</strong><span>Disponible</span></button>)}</div><div className="booking-wizard-actions"><button className="booking-secondary-action" type="button" onClick={() => setStep(2)}>Cambiar día</button></div></>}
         {step === 4 && <><div className="booking-panel-title"><CheckCircle size={20}/><h2>4. Confirma tu cita</h2></div><div className="booking-confirm-details"><div><span>Servicio</span><strong>{serviceName}</strong></div><div><span>Fecha</span><strong>{longDate(date)}</strong></div><div><span>Hora</span><strong>{slot?.time}</strong></div><div><span>Duración</span><strong>{duration} minutos</strong></div><div><span>Total</span><strong>${money(shownService?.price)}</strong></div></div><div className="booking-wizard-actions"><button className="booking-secondary-action" type="button" onClick={() => setStep(3)}>Cambiar horario</button><button className="booking-confirm-button booking-confirm-button--inline" disabled={saving} onClick={create}>{saving ? 'Agendando...' : 'Confirmar cita'}</button></div></>}
       </section>
