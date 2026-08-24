@@ -1087,6 +1087,75 @@ body {
   line-height: 1.45;
 }
 
+.client-appointment-details {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.8rem 0 0;
+}
+
+.client-appointment-details div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.82rem;
+}
+
+.client-appointment-details dt { color: #6b5a4c; }
+.client-appointment-details dd { margin: 0; color: #1a1a1a; font-weight: 700; }
+
+.client-appointment-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+  margin-top: 0.85rem;
+}
+
+.client-appointment-actions .client-cancel-appointment { margin-top: 0; }
+
+.client-reschedule-appointment {
+  border: 1px solid #d4c5b0;
+  background: #fffdf9;
+  color: #5e4b3a;
+  border-radius: 999px;
+  padding: 0.75rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.client-reschedule-appointment:hover { border-color: #b8860b; color: #1a1a1a; }
+
+.appointment-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(26, 26, 26, 0.58);
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.appointment-reschedule-modal {
+  position: relative;
+  width: min(620px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 24px;
+  padding: 1.4rem;
+  box-shadow: 0 24px 60px rgba(0,0,0,.25);
+}
+
+.appointment-reschedule-modal h2 { font-family: 'Playfair Display', serif; margin: 0 2.5rem 1rem 0; }
+.appointment-modal-close { position: absolute; right: 1rem; top: 1rem; border: 0; background: #f1e8df; border-radius: 50%; width: 36px; height: 36px; display: grid; place-items: center; cursor: pointer; }
+.booking-date-label { display: grid; gap: 0.45rem; margin-top: 1rem; color: #5e4b3a; font-size: .82rem; font-weight: 800; }
+.reschedule-summary { margin-top: 1rem; border-top: 1px solid #e8e0d5; padding-top: 1rem; }
+.reschedule-summary h3 { margin-bottom: .7rem; }
+.reschedule-summary p { margin: .4rem 0; color: #5e4b3a; font-size: .88rem; }
+
 .booking-page-container {
   max-width: 1500px;
   margin: 0 auto;
