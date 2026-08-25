@@ -29,7 +29,7 @@ function App() {
   return (
     <>
       <Toaster position="top-right" reverseOrder={false} />
-      
+
       <Routes>
         {/* ================= Lado Público ================= */}
         <Route path="/" element={<Home />} />
@@ -40,11 +40,11 @@ function App() {
 
         {/* ================= Acceso Cliente ================= */}
         <Route element={<ProtectedRoute allowedRoles={['client', 'employee']} unauthorizedPath="/admin/dashboard" />}>
-          <Route path="/mi-cuenta" element={<ClientDashboard />} />
+          <Route path="/mi-cuenta/:section?" element={<ClientDashboard />} />
         </Route>
 
         {/* ================= Panel Administrativo ================= */}
-        <Route element={<ProtectedRoute allowedRoles={['admin']} unauthorizedPath="/mi-cuenta" />}>
+        <Route element={<ProtectedRoute allowedRoles={['admin']} unauthorizedPath="/mi-cuenta/productos" />}>
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="dashboard" element={<AdminDashboard />} />

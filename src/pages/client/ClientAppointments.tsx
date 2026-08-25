@@ -3,6 +3,7 @@ import useSWR from 'swr';
 import { Calendar, CheckCircle2, Clock, History, Plus, RefreshCw, Scissors, X, XCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
+import AppointmentDatePicker from '../../components/client/AppointmentDatePicker';
 import ClientBookAppointment from './ClientBookAppointment';
 import {
   appointmentDateForRequest,
@@ -10,9 +11,7 @@ import {
   appointmentHourLabel,
   appointmentRemainingLabel,
   getApiMessage,
-  isSunday,
   isValidAppointmentDate,
-  localDateKey,
   rescheduleDeadlineLabel,
   type AppointmentSlot,
 } from './appointmentUtils';
@@ -71,11 +70,23 @@ const ClientAppointments = ({ initialView = 'list' }: Props) => {
   }, [newDate, rescheduling]);
 
   const closeReschedule = () => { setRescheduling(null); setNewDate(''); setNewSlot(null); setSlots([]); };
+
   const cancel = async (item: Appointment) => {
-    if (!window.confirm('¿Confirmas que deseas cancelar esta cita?')) return;
-    try { await api.patch(`/appointments/${item.id}/cancel`); toast.success('Cita cancelada correctamente.'); await mutate(); }
-    catch (requestError) { toast.error(getApiMessage(requestError, 'No se pudo cancelar la cita. Intenta más tarde.')); }
+    const minutes = Number(item.minutes_until_appointment ?? ((item.hours_until_appointment ?? 0) * 60));
+    const inside24Hours = Number.isFinite(minutes) && minutes > 0 && minutes < 1440;
+    const message = inside24Hours
+      ? 'Faltan menos de 24 horas para tu cita. Puedes cancelarla, pero el anticipo no será reembolsable. ¿Deseas continuar?'
+      : '¿Confirmas que deseas cancelar esta cita?';
+    if (!window.confirm(message)) return;
+    try {
+      await api.patch(`/appointments/${item.id}/cancel`);
+      toast.success(inside24Hours ? 'Cita cancelada. El anticipo no es reembolsable por haberse cancelado con menos de 24 horas.' : 'Cita cancelada correctamente.');
+      await mutate();
+    } catch (requestError) {
+      toast.error(getApiMessage(requestError, 'No se pudo cancelar la cita. Intenta más tarde.'));
+    }
   };
+
   const reschedule = async () => {
     if (!rescheduling || !newSlot) return;
     const endpoint = `/appointments/${rescheduling.id}/reschedule`;
@@ -116,7 +127,7 @@ const ClientAppointments = ({ initialView = 'list' }: Props) => {
   return <div className="client-appointments-container">
     <div className="appointments-client-header"><div><span className="section-badge">Agenda personal</span><h1>Mis Citas</h1><p>Consulta tus próximas visitas, revisa tu historial y agenda nuevos servicios.</p></div><div className="client-appointments-tabs"><button className={view === 'list' ? 'active' : ''} onClick={() => setView('list')}><Calendar size={16}/>Mis citas</button><button className={view === 'book' ? 'active' : ''} onClick={() => setView('book')}><Plus size={16}/>Agendar</button></div></div>
     {view === 'book' ? <ClientBookAppointment onAppointmentCreated={() => { mutate(); setView('list'); }}/> : <><section className="client-appointments-summary"><div><CheckCircle2 size={24}/><span>Próximas citas</span><strong>{upcoming.length}</strong></div><div><History size={24}/><span>Historial</span><strong>{history.length}</strong></div></section>{isLoading && <div className="booking-message">Cargando tus citas...</div>}{error && <div className="booking-message error">No se pudieron cargar tus citas. Intenta más tarde.</div>}{!isLoading && !error && !appointments.length && <div className="client-appointments-empty"><Calendar size={42}/><h2>Aún no tienes citas</h2><p>Agenda tu primer servicio.</p><button onClick={() => setView('book')}><Plus size={17}/>Agendar cita</button></div>}{upcoming.length > 0 && <section className="client-appointments-section"><div className="client-section-title"><Calendar size={18}/><h2>Próximas citas</h2></div><div className="client-appointments-grid">{upcoming.map(card)}</div></section>}{history.length > 0 && <section className="client-appointments-section"><div className="client-section-title"><History size={18}/><h2>Historial</h2></div><div className="client-appointments-grid">{history.map(card)}</div></section>}</>}
-    {rescheduling && <div className="appointment-modal-backdrop" role="presentation"><section className="appointment-reschedule-modal" role="dialog" aria-modal="true" aria-labelledby="reschedule-title"><button className="appointment-modal-close" onClick={closeReschedule} aria-label="Cerrar"><X/></button><h2 id="reschedule-title">Reagendar cita</h2><div className="booking-selected-service"><strong>{serviceName(rescheduling)}</strong><span>{rescheduling.duration ?? rescheduling.duration_minutes ?? '—'} minutos</span></div><label className="booking-date-label">Nueva fecha<input className="booking-date-input" type="date" min={localDateKey()} value={newDate} onChange={(e) => { const nextDate = e.target.value; if (!isValidAppointmentDate(nextDate)) { setNewDate(''); toast.error(isSunday(nextDate) ? 'Los domingos la estética permanece cerrada.' : 'Selecciona una fecha a partir de hoy.'); return; } setNewDate(nextDate); }}/></label>{loadingSlots && <div className="booking-message">Consultando disponibilidad...</div>}{newDate && !loadingSlots && !slots.length && <div className="booking-message">No existen horarios disponibles para este día o el negocio está cerrado.</div>}<div className="booking-slots-grid">{slots.map((item) => <button key={`${item.appointment_date}-${item.time}`} className={`booking-slot available ${newSlot?.appointment_date === item.appointment_date ? 'selected' : ''}`} onClick={() => setNewSlot(item)}><strong>{item.time}</strong><span>Disponible</span></button>)}</div>{newSlot && <div className="reschedule-summary"><h3>Confirma el cambio</h3><p><b>Servicio:</b> {serviceName(rescheduling)}</p><p><b>Fecha anterior:</b> {dateLabel(rescheduling)} · {hourLabel(rescheduling)}</p><p><b>Nueva fecha:</b> {appointmentDateLabel(undefined, newSlot.appointment_date)}</p><p><b>Nueva hora:</b> {newSlot.time}</p><p><b>Duración:</b> {rescheduling.duration ?? rescheduling.duration_minutes ?? '—'} minutos</p><button className="booking-confirm-button" disabled={saving} onClick={reschedule}>{saving ? 'Reagendando...' : 'Confirmar reagendamiento'}</button></div>}</section></div>}
+    {rescheduling && <div className="appointment-modal-backdrop" role="presentation"><section className="appointment-reschedule-modal" role="dialog" aria-modal="true" aria-labelledby="reschedule-title"><button className="appointment-modal-close" onClick={closeReschedule} aria-label="Cerrar"><X/></button><h2 id="reschedule-title">Reagendar cita</h2><div className="booking-selected-service"><strong>{serviceName(rescheduling)}</strong><span>{rescheduling.duration ?? rescheduling.duration_minutes ?? '—'} minutos</span></div><AppointmentDatePicker value={newDate} onChange={setNewDate} />{loadingSlots && <div className="booking-message">Consultando disponibilidad...</div>}{newDate && !loadingSlots && !slots.length && <div className="booking-message">No existen horarios disponibles para este día o el negocio está cerrado.</div>}<div className="booking-slots-grid">{slots.map((item) => <button key={`${item.appointment_date}-${item.time}`} className={`booking-slot available ${newSlot?.appointment_date === item.appointment_date ? 'selected' : ''}`} onClick={() => setNewSlot(item)}><strong>{item.time}</strong><span>Disponible</span></button>)}</div>{newSlot && <div className="reschedule-summary"><h3>Confirma el cambio</h3><p><b>Servicio:</b> {serviceName(rescheduling)}</p><p><b>Fecha anterior:</b> {dateLabel(rescheduling)} · {hourLabel(rescheduling)}</p><p><b>Nueva fecha:</b> {appointmentDateLabel(undefined, newSlot.appointment_date)}</p><p><b>Nueva hora:</b> {newSlot.time}</p><p><b>Duración:</b> {rescheduling.duration ?? rescheduling.duration_minutes ?? '—'} minutos</p><button className="booking-confirm-button" disabled={saving} onClick={reschedule}>{saving ? 'Reagendando...' : 'Confirmar reagendamiento'}</button></div>}</section></div>}
   </div>;
 };
 export default ClientAppointments;

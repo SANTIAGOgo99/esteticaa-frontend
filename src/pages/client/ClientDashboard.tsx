@@ -1,6 +1,6 @@
 // src/pages/client/ClientDashboard.tsx
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import ClientSidebar from '../../components/client/ClientSidebar';
 
@@ -20,13 +20,21 @@ interface UserProfile {
   phone: string;
 }
 
+const validSections = new Set(['productos', 'servicios', 'citas', 'carrito', 'perfil']);
+
 const ClientDashboard = () => {
-  const [activeTab, setActiveTab] = useState('productos');
+  const { section } = useParams();
+  const navigate = useNavigate();
+  const activeTab = useMemo(() => section && validSections.has(section) ? section : 'productos', [section]);
   const [appointmentsInitialView, setAppointmentsInitialView] = useState<'list' | 'book'>('list');
   const [userData, setUserData] = useState<UserProfile | null>(null);
   const cart = useCart();
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    if (!section || !validSections.has(section)) {
+      navigate('/mi-cuenta/productos', { replace: true });
+    }
+  }, [navigate, section]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -35,16 +43,13 @@ const ClientDashboard = () => {
   };
 
   const handleTabChange = (tab: string) => {
-    if (tab === 'citas') {
-      setAppointmentsInitialView('list');
-    }
-
-    setActiveTab(tab);
+    if (tab === 'citas') setAppointmentsInitialView('list');
+    navigate(`/mi-cuenta/${tab}`);
   };
 
   const goToBookAppointment = () => {
     setAppointmentsInitialView('book');
-    setActiveTab('citas');
+    navigate('/mi-cuenta/citas');
   };
 
   useEffect(() => {
@@ -54,15 +59,11 @@ const ClientDashboard = () => {
         setUserData(profileRes.data);
       } catch (error) {
         const axiosError = error as { response?: { status?: number } };
-
-        if (axiosError.response?.status === 401) {
-          handleLogout();
-        }
+        if (axiosError.response?.status === 401) handleLogout();
       }
     };
 
     fetchProfile();
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -82,7 +83,7 @@ const ClientDashboard = () => {
             <ClientProducts
               addToCart={cart.addItem}
               cartCount={cart.totalItems}
-              openCart={() => setActiveTab('carrito')}
+              openCart={() => navigate('/mi-cuenta/carrito')}
             />
           )}
 
@@ -101,7 +102,7 @@ const ClientDashboard = () => {
               updateQuantity={cart.updateQuantity}
               removeItem={cart.removeItem}
               clearCart={cart.clearCart}
-              goToProducts={() => setActiveTab('productos')}
+              goToProducts={() => navigate('/mi-cuenta/productos')}
             />
           )}
 
