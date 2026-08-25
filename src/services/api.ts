@@ -13,8 +13,37 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+const appointmentStatusLabels: Record<string, string> = {
+  in_process: 'En proceso',
+  pending_review: 'Pendiente de cierre',
+};
+
+const normalizeMyAppointmentsResponse = (response: any) => {
+  const url = String(response?.config?.url || '');
+  if (!url.includes('/appointments/my')) return response;
+
+  const data = response?.data;
+  const appointments = Array.isArray(data)
+    ? data
+    : (Array.isArray(data?.appointments) ? data.appointments : []);
+
+  appointments.forEach((appointment: any) => {
+    if (appointment?.appointment_local) {
+      appointment.appointment_date = String(appointment.appointment_local).replace(' ', 'T');
+    }
+
+    const status = String(appointment?.calendar_status || '');
+    if (appointmentStatusLabels[status]) {
+      appointment.calendar_status_code = status;
+      appointment.calendar_status = appointmentStatusLabels[status];
+    }
+  });
+
+  return response;
+};
+
 api.interceptors.response.use(
-  (response) => response,
+  (response) => normalizeMyAppointmentsResponse(response),
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
