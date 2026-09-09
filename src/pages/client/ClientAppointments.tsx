@@ -3,6 +3,7 @@ import useSWR from 'swr';
 import { Calendar, CheckCircle2, Clock, History, Plus, RefreshCw, Scissors, X, XCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
+import { getSessionStorageId } from '../../utils/session';
 import AppointmentDatePicker from '../../components/client/AppointmentDatePicker';
 import ClientBookAppointment from './ClientBookAppointment';
 import {
@@ -16,7 +17,6 @@ import {
   type AppointmentSlot,
 } from './appointmentUtils';
 
-const fetcher = (url: string) => api.get(url).then((res) => res.data);
 type AppointmentView = 'list' | 'book';
 interface Props { initialView?: AppointmentView }
 interface Appointment {
@@ -30,16 +30,36 @@ interface Appointment {
 
 const money = (value?: string | number) => Number(value || 0).toFixed(2);
 const statusOf = (item: Appointment) => item.calendar_status || item.status;
-const statusLabel = (status: string) => ({ pending: 'Pendiente', confirmed: 'Confirmada', canceled: 'Cancelada', cancelled: 'Cancelada', completed: 'Completada', no_show: 'No asistió' }[status] || status);
+const statusLabel = (status: string) => ({
+  pending: 'Pendiente',
+  confirmed: 'Confirmada',
+  canceled: 'Cancelada',
+  cancelled: 'Cancelada',
+  completed: 'Completada',
+  no_show: 'No asistió',
+  in_process: 'En proceso',
+  pending_review: 'Pendiente de cierre',
+}[status] || status);
 const statusClass = (status: string) => status === 'confirmed' ? 'status-confirmed' : status === 'pending' ? 'status-pending' : ['canceled', 'cancelled', 'no_show'].includes(status) ? 'status-canceled' : 'status-completed';
-const active = (item: Appointment) => ['pending', 'confirmed'].includes(statusOf(item));
+const active = (item: Appointment) => ['pending', 'confirmed'].includes(item.status);
 const serviceName = (item: Appointment) => item.service_name || item.servicio || 'Servicio general';
 const dateLabel = (item: Appointment) => appointmentDateLabel(item.appointment_local, item.appointment_date);
 const hourLabel = (item: Appointment) => appointmentHourLabel(item.appointment_local, item.appointment_date);
+const appointmentSortValue = (item: Appointment) => {
+  const value = item.appointment_local || item.appointment_date;
+  const parsed = new Date(value.replace(' ', 'T'));
+  return Number.isNaN(parsed.getTime()) ? 0 : parsed.getTime();
+};
 
 const ClientAppointments = ({ initialView = 'list' }: Props) => {
   const [view, setView] = useState<AppointmentView>(initialView);
-  const { data, error, isLoading, mutate } = useSWR('/appointments/my', fetcher);
+  const sessionId = getSessionStorageId();
+  const appointmentsCacheKey = sessionId ? `appointments-my:${sessionId}` : null;
+  const { data, error, isLoading, mutate } = useSWR(
+    appointmentsCacheKey,
+    () => api.get('/appointments/my').then((res) => res.data),
+    { revalidateOnMount: true, dedupingInterval: 0 },
+  );
   const [rescheduling, setRescheduling] = useState<Appointment | null>(null);
   const [newDate, setNewDate] = useState('');
   const [newSlot, setNewSlot] = useState<AppointmentSlot | null>(null);
@@ -48,8 +68,8 @@ const ClientAppointments = ({ initialView = 'list' }: Props) => {
   const [saving, setSaving] = useState(false);
   useEffect(() => setView(initialView), [initialView]);
   const appointments: Appointment[] = useMemo(() => Array.isArray(data) ? data : data?.appointments || [], [data]);
-  const sorted = useMemo(() => [...appointments].sort((a, b) => new Date(a.appointment_date).getTime() - new Date(b.appointment_date).getTime()), [appointments]);
-  const upcoming = sorted.filter((item) => new Date(item.appointment_date).getTime() >= Date.now() && active(item));
+  const sorted = useMemo(() => [...appointments].sort((a, b) => appointmentSortValue(a) - appointmentSortValue(b)), [appointments]);
+  const upcoming = sorted.filter((item) => active(item) && Number(item.minutes_until_appointment ?? 0) > 0);
   const history = sorted.filter((item) => !upcoming.includes(item)).reverse();
 
   useEffect(() => {
@@ -110,7 +130,7 @@ const ClientAppointments = ({ initialView = 'list' }: Props) => {
     const remaining = appointmentRemainingLabel(
       item.hours_until_appointment,
       item.minutes_until_appointment,
-      !active(item) && new Date(item.appointment_date).getTime() < Date.now(),
+      !active(item) && appointmentSortValue(item) < Date.now(),
     );
     const deadline = rescheduleDeadlineLabel(item.reschedule_deadline);
     return <article key={item.id} className="client-appointment-card">
