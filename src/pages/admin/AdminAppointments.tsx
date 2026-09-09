@@ -31,12 +31,25 @@ type AppointmentFilter = 'all' | 'today' | 'pending_review' | 'completed' | 'no_
 
 interface CitaAdmin {
   id: number;
+  client_id?: number;
   cliente: string;
+  cliente_email?: string;
+  cliente_telefono?: string;
   servicio: string;
+  service_name?: string;
+  service_category?: string;
+  category?: string;
+  duration_minutes?: number;
+  service_price?: string | number;
+  price?: string | number;
   appointment_date: string;
   appointment_local?: string;
   appointment_end?: string;
   total_amount: string | number;
+  deposit_amount?: string | number;
+  remaining_amount?: string | number;
+  appointment_origin?: string;
+  origin?: string;
   status: AppointmentStatus;
   calendar_status?: AppointmentStatus;
   calendar_status_label?: string;
@@ -97,6 +110,9 @@ const formatCitaDate = (cita: CitaAdmin) => {
 const formatLongDate = (value: Date) => value.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 const addDays = (date: Date, days: number) => { const copy = new Date(date); copy.setDate(copy.getDate() + days); return copy; };
 const getCitaDisplayStatus = (cita: CitaAdmin) => cita.calendar_status || cita.status;
+const serviceCategory = (cita: CitaAdmin) => cita.service_category || cita.category || 'Sin categoría';
+const serviceDuration = (cita: CitaAdmin) => cita.duration_minutes ? `${cita.duration_minutes} min` : 'Sin duración';
+const appointmentOrigin = (cita: CitaAdmin) => cita.origin || cita.appointment_origin || 'web';
 
 const AdminAppointments = () => {
   const [citas, setCitas] = useState<CitaAdmin[]>([]);
@@ -219,7 +235,7 @@ const AdminAppointments = () => {
     <div className="saas-container">
       <Breadcrumbs />
       <div className="saas-header">
-        <div><p className="saas-eyebrow">Gestion de Agenda</p><h1 className="saas-title">Citas Programadas</h1><p className="saas-subtitle">Las citas tomadas desde la web se confirman automaticamente cuando el horario esta disponible.</p></div>
+        <div><p className="saas-eyebrow">Gestion de Agenda</p><h1 className="saas-title">Citas Programadas</h1><p className="saas-subtitle">Consulta quién reservó, qué servicio eligió, duración, contacto, origen y estado de cada cita.</p></div>
         <div className="appointments-view-switch"><button type="button" className={viewMode === 'calendar' ? 'active' : ''} onClick={() => setViewMode('calendar')}><CalendarDays size={16}/>Calendario</button><button type="button" className={viewMode === 'table' ? 'active' : ''} onClick={() => setViewMode('table')}><List size={16}/>Tabla</button></div>
       </div>
 
@@ -244,18 +260,41 @@ const AdminAppointments = () => {
                 const isCurrentMonth = day.getMonth() === currentMonth.getMonth();
                 const isSelected = dateKey === selectedDateKey;
                 const isToday = dateKey === formatDateKey(new Date());
-                return <button type="button" key={dateKey} className={['calendar-day-cell', !isCurrentMonth ? 'muted' : '', isSelected ? 'selected' : '', isToday ? 'today' : ''].join(' ')} onClick={() => setSelectedDate(day)}><span className="calendar-day-number">{day.getDate()}</span>{dayAppointments.length > 0 && <span className="calendar-day-count">{dayAppointments.length}</span>}<div className="calendar-day-items">{dayAppointments.slice(0, 2).map((cita) => <span key={cita.id} className={`calendar-mini-event ${getStatusBadgeClass(getCitaDisplayStatus(cita))}`}>{formatHour(cita)} {cita.servicio || 'Servicio'}</span>)}{dayAppointments.length > 2 && <span className="calendar-more">+{dayAppointments.length - 2} mas</span>}</div></button>;
+                return <button type="button" key={dateKey} className={['calendar-day-cell', !isCurrentMonth ? 'muted' : '', isSelected ? 'selected' : '', isToday ? 'today' : ''].join(' ')} onClick={() => setSelectedDate(day)}><span className="calendar-day-number">{day.getDate()}</span>{dayAppointments.length > 0 && <span className="calendar-day-count">{dayAppointments.length}</span>}<div className="calendar-day-items">{dayAppointments.slice(0, 2).map((cita) => <span key={cita.id} title={`${cita.cliente || 'Cliente'} · ${cita.servicio || 'Servicio'}`} className={`calendar-mini-event ${getStatusBadgeClass(getCitaDisplayStatus(cita))}`}>{formatHour(cita)} {cita.servicio || 'Servicio'}</span>)}{dayAppointments.length > 2 && <span className="calendar-more">+{dayAppointments.length - 2} mas</span>}</div></button>;
               })}
             </div>
           </section>
 
           <aside className="calendar-day-panel">
             <div className="calendar-day-panel-header"><span>Dia seleccionado</span><h2>{formatLongDate(selectedDate)}</h2></div>
-            {selectedAppointments.length === 0 ? <div className="calendar-empty-day"><CalendarIcon size={28}/><p>No hay citas para este dia.</p></div> : <div className="calendar-appointment-list">{selectedAppointments.map((cita) => <article key={cita.id} className="calendar-appointment-card"><div className="calendar-appointment-time"><Clock size={15}/>{formatHour(cita)}</div><h3>{cita.servicio || 'Servicio General'}</h3><p>{cita.cliente || 'Usuario Web'}</p><div className="calendar-appointment-footer">{renderStatusBadge(getCitaDisplayStatus(cita))}<strong>${Number(cita.total_amount || 0).toFixed(2)}</strong></div><div className="calendar-appointment-actions">{renderActions(cita)}</div></article>)}</div>}
+            {selectedAppointments.length === 0 ? <div className="calendar-empty-day"><CalendarIcon size={28}/><p>No hay citas para este dia.</p></div> : <div className="calendar-appointment-list">{selectedAppointments.map((cita) => <article key={cita.id} className="calendar-appointment-card">
+              <div className="calendar-appointment-time"><Clock size={15}/>{formatHour(cita)}</div>
+              <h3>{cita.servicio || 'Servicio General'}</h3>
+              <div style={{ display: 'grid', gap: 4, marginTop: 8, fontSize: 13 }}>
+                <span><strong>Cliente:</strong> {cita.cliente || 'Usuario Web'}{cita.client_id ? ` (#${cita.client_id})` : ''}</span>
+                <span><strong>Categoría:</strong> {serviceCategory(cita)}</span>
+                <span><strong>Duración:</strong> {serviceDuration(cita)}</span>
+                {cita.cliente_email && <span><strong>Correo:</strong> {cita.cliente_email}</span>}
+                {cita.cliente_telefono && <span><strong>Teléfono:</strong> {cita.cliente_telefono}</span>}
+                <span><strong>Origen:</strong> {appointmentOrigin(cita)}</span>
+              </div>
+              <div className="calendar-appointment-footer">{renderStatusBadge(getCitaDisplayStatus(cita))}<strong>${Number(cita.total_amount || 0).toFixed(2)}</strong></div>
+              <div className="calendar-appointment-actions">{renderActions(cita)}</div>
+            </article>)}</div>}
           </aside>
         </div>
       ) : (
-        <div className="saas-table-card"><table className="saas-table"><thead><tr><th>ID</th><th>Cliente</th><th>Servicio</th><th>Fecha y Hora</th><th>Monto</th><th>Estado</th><th className="text-center">Acciones</th></tr></thead><tbody>{filteredCitas.length === 0 ? <tr><td colSpan={7} className="text-center text-muted" style={{ padding: '40px' }}>No hay citas agendadas en este momento.</td></tr> : filteredCitas.map((cita) => <tr key={cita.id} className={getCitaDisplayStatus(cita) === 'pending_review' ? 'row-highlight' : ''}><td className="text-muted">#{cita.id}</td><td className="font-medium text-indigo">{cita.cliente || 'Usuario Web'}</td><td>{cita.servicio || 'Servicio General'}</td><td><div className="appointment-date-cell"><span><CalendarIcon size={12} className="text-muted"/>{formatCitaDate(cita)}</span><span><Clock size={12} className="text-muted"/>{formatHour(cita)}</span></div></td><td className="font-semibold text-emerald">${Number(cita.total_amount || 0).toFixed(2)}</td><td>{renderStatusBadge(getCitaDisplayStatus(cita))}</td><td><div className="action-buttons">{renderActions(cita)}</div></td></tr>)}</tbody></table></div>
+        <div className="saas-table-card"><table className="saas-table"><thead><tr><th>ID</th><th>Cliente</th><th>Servicio</th><th>Contacto</th><th>Fecha y Hora</th><th>Origen</th><th>Monto</th><th>Estado</th><th className="text-center">Acciones</th></tr></thead><tbody>{filteredCitas.length === 0 ? <tr><td colSpan={9} className="text-center text-muted" style={{ padding: '40px' }}>No hay citas agendadas en este momento.</td></tr> : filteredCitas.map((cita) => <tr key={cita.id} className={getCitaDisplayStatus(cita) === 'pending_review' ? 'row-highlight' : ''}>
+          <td className="text-muted">#{cita.id}</td>
+          <td className="font-medium text-indigo"><div>{cita.cliente || 'Usuario Web'}</div>{cita.client_id && <small className="text-muted">Cliente #{cita.client_id}</small>}</td>
+          <td><div>{cita.servicio || 'Servicio General'}</div><small className="text-muted">{serviceCategory(cita)} · {serviceDuration(cita)}</small></td>
+          <td><div>{cita.cliente_telefono || 'Sin teléfono'}</div><small className="text-muted">{cita.cliente_email || 'Sin correo'}</small></td>
+          <td><div className="appointment-date-cell"><span><CalendarIcon size={12} className="text-muted"/>{formatCitaDate(cita)}</span><span><Clock size={12} className="text-muted"/>{formatHour(cita)}</span></div></td>
+          <td>{appointmentOrigin(cita)}</td>
+          <td className="font-semibold text-emerald">${Number(cita.total_amount || 0).toFixed(2)}</td>
+          <td>{renderStatusBadge(getCitaDisplayStatus(cita))}</td>
+          <td><div className="action-buttons">{renderActions(cita)}</div></td>
+        </tr>)}</tbody></table></div>
       )}
     </div>
   );
