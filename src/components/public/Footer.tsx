@@ -3,8 +3,12 @@ import { Link } from 'react-router-dom';
 import logoImagen from '../../assets/images/LogoImagen.png';
 import { useSiteSettings } from '../../hooks/useSiteSettings';
 
-const Footer = () => {
-  const { settings } = useSiteSettings();
+interface FooterProps {
+  loadRemoteSettings?: boolean;
+}
+
+const Footer = ({ loadRemoteSettings = true }: FooterProps) => {
+  const { settings } = useSiteSettings(loadRemoteSettings);
   const phones = [settings.phone_primary, settings.phone_secondary].filter(Boolean).join(' / ');
   const socialLinks = [
     { href: settings.instagram_url, label: 'Instagram', icon: <Instagram size={15} /> },

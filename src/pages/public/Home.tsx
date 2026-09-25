@@ -21,18 +21,40 @@ const Home = () => {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [servicios, setServicios] = useState<Servicio[]>([]);
   const [loading, setLoading] = useState(true);
-  const { settings } = useSiteSettings();
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const [loadSecondaryContent, setLoadSecondaryContent] = useState(false);
+  const { settings } = useSiteSettings(loadSecondaryContent);
   const phones = [settings.phone_primary, settings.phone_secondary].filter(Boolean);
 
   const handleOpenLogin = () => navigate('/login');
 
   useEffect(() => {
+    const activateSecondaryContent = () => {
+      setLoadSecondaryContent(true);
+    };
+
+    window.addEventListener('scroll', activateSecondaryContent, { passive: true, once: true });
+    window.addEventListener('touchstart', activateSecondaryContent, { passive: true, once: true });
+    window.addEventListener('pointerdown', activateSecondaryContent, { passive: true, once: true });
+
+    return () => {
+      window.removeEventListener('scroll', activateSecondaryContent);
+      window.removeEventListener('touchstart', activateSecondaryContent);
+      window.removeEventListener('pointerdown', activateSecondaryContent);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!loadSecondaryContent) return;
+
     const fetchCatalogo = async () => {
       try {
         setLoading(true);
-        const prodRes = await api.get('/products/active');
+        const [prodRes, servRes] = await Promise.all([
+          api.get('/products/active'),
+          api.get('/services/active'),
+        ]);
         setProductos(prodRes.data.slice(0, 8));
-        const servRes = await api.get('/services/active');
         setServicios(servRes.data.slice(0, 8));
       } catch (error) {
         console.error("Error cargando el catálogo público:", error);
@@ -40,13 +62,16 @@ const Home = () => {
         setLoading(false);
       }
     };
-    fetchCatalogo();
-  }, []);
+
+    void fetchCatalogo();
+  }, [loadSecondaryContent]);
 
   const getImageUrl = (url?: string) => {
     if (!url) return null;
     if (url.startsWith('http')) return url;
-    return `http://localhost:3000${url}`;
+
+    const apiBase = String(import.meta.env.VITE_API_URL || '').replace(/\/api\/?$/, '');
+    return `${apiBase}${url.startsWith('/') ? url : `/${url}`}`;
   };
 
   return (
@@ -104,11 +129,20 @@ const Home = () => {
             <div className="flex-shrink-0 hidden lg:block relative w-[380px] h-[500px] animate-fade-up" style={{ animationDelay: '0.4s' }}>
               <div className="w-full h-full rounded-t-[200px] rounded-b-[20px] overflow-hidden border-4 border-[#3D2512] shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative z-10">
                 <div className="absolute inset-0 bg-[#C9A050]/10 mix-blend-overlay z-10" />
-                <img 
-                  src="https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=1000&auto=format&fit=crop" 
-                  alt="Interior Atelier" 
-                  className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" 
-                />
+                <picture>
+                  <source
+                    media="(min-width: 1024px)"
+                    srcSet="https://images.unsplash.com/photo-1560066984-138dadb4c035?q=75&w=760&auto=format&fit=crop"
+                  />
+                  <img
+                    src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                    alt="Interior Atelier"
+                    width="380"
+                    height="500"
+                    decoding="async"
+                    className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                  />
+                </picture>
               </div>
 
               <div className="absolute bottom-16 -left-12 bg-[#FAF6F0] border border-[#C9A050]/20 rounded-2xl px-5 py-3.5 shadow-2xl flex items-center gap-4 animate-float z-20">
@@ -148,7 +182,7 @@ const Home = () => {
         </div>
 
         {/* ── SERVICIOS ── */}
-        <section className="py-20 px-5 md:px-8 bg-[#F2E9DC]" id="servicios">
+        <section className="defer-section py-20 px-5 md:px-8 bg-[#F2E9DC]" id="servicios">
           <div className="text-center max-w-3xl mx-auto mb-14">
             <span className="text-[0.58rem] font-medium tracking-[4.5px] uppercase text-[#C07A60] block mb-3">Rituales exclusivos</span>
             <h2 className="font-serif text-4xl md:text-5xl font-light text-[#3D2512]">
@@ -173,8 +207,15 @@ const Home = () => {
                     className="bg-white rounded-2xl border border-[#B48C64]/14 overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_50px_rgba(61,37,18,.12)] hover:border-[#C9A050]/35 group flex flex-col">
                     <div className="h-44 bg-gradient-to-br from-[#F2E3D9] to-[#DEB49E] flex items-center justify-center overflow-hidden shrink-0 relative">
                       {getImageUrl(serv.image_url) ? (
-                        <img src={getImageUrl(serv.image_url)!} alt={serv.name}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        <img
+                          src={getImageUrl(serv.image_url)!}
+                          alt={serv.name}
+                          width="420"
+                          height="176"
+                          loading="lazy"
+                          decoding="async"
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
                       ) : (
                         <Flower2 size={30} className="text-[#8B4C38]/40" strokeWidth={1} />
                       )}
@@ -203,7 +244,7 @@ const Home = () => {
         </section>
 
         {/* ── PRODUCTOS ── */}
-        <section className="py-20 px-5 md:px-8 bg-[#FAF6F0]" id="productos">
+        <section className="defer-section py-20 px-5 md:px-8 bg-[#FAF6F0]" id="productos">
           <div className="text-center max-w-3xl mx-auto mb-14">
             <span className="text-[0.58rem] font-medium tracking-[4.5px] uppercase text-[#C07A60] block mb-3">Esenciales seleccionados</span>
             <h2 className="font-serif text-4xl md:text-5xl font-light text-[#3D2512]">
@@ -228,8 +269,15 @@ const Home = () => {
                     className="bg-white rounded-2xl border border-[#C9A050]/14 overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_38px_rgba(61,37,18,.10)] hover:border-[#C9A050]/30 group flex flex-col">
                     <div className="h-36 bg-gradient-to-br from-[#F2E3D9] to-[#E8C9B8] flex items-center justify-center overflow-hidden shrink-0 relative">
                       {getImageUrl(prod.image_url) ? (
-                        <img src={getImageUrl(prod.image_url)!} alt={prod.name}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        <img
+                          src={getImageUrl(prod.image_url)!}
+                          alt={prod.name}
+                          width="420"
+                          height="144"
+                          loading="lazy"
+                          decoding="async"
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
                       ) : (
                         <Droplets size={26} className="text-[#C9907A]/50" strokeWidth={1} />
                       )}
@@ -253,7 +301,7 @@ const Home = () => {
         </section>
 
         {/* ── FILOSOFÍA ── */}
-        <section className="py-20 px-5 md:px-8 bg-[#2E1A0E] relative" id="nosotros">
+        <section className="defer-section py-20 px-5 md:px-8 bg-[#2E1A0E] relative" id="nosotros">
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#C9A050]/50 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#C9A050]/30 to-transparent" />
           <div className="text-center max-w-3xl mx-auto mb-14">
@@ -283,7 +331,7 @@ const Home = () => {
         </section>
 
         {/* ── UBICACIÓN Y MAPA (Actualizado por Legibilidad) ── */}
-        <section className="py-24 px-5 md:px-8 bg-[#F2E9DC] border-t border-[#B48C64]/10" id="ubicacion">
+        <section className="defer-section py-24 px-5 md:px-8 bg-[#F2E9DC] border-t border-[#B48C64]/10" id="ubicacion">
           <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-16 items-center">
             
             {/* Información de contacto - Estilo de la imagen de referencia */}
@@ -341,19 +389,39 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Mapa Interactivo */}
+            {/* Mapa Interactivo: se carga solo cuando el usuario lo solicita.
+                Así evitamos cookies y scripts de terceros durante la carga inicial. */}
             <div className="flex-1 w-full max-w-[500px] lg:max-w-none mx-auto mt-10 lg:mt-0">
               <div className="w-full h-[450px] md:h-[500px] bg-white rounded-[2rem] p-2.5 border border-[#C9A050]/30 shadow-[0_20px_50px_rgba(61,37,18,.08)] relative overflow-hidden group">
-                 <iframe 
+                {mapLoaded ? (
+                  <iframe
+                    title="Ubicación de Ezequiel Castillo Hair Designer"
                     src={settings.map_embed_url}
-                    width="100%" 
-                    height="100%" 
-                    style={{ border: 0, borderRadius: '1.5rem' }} 
-                    allowFullScreen 
-                    loading="lazy" 
-                    referrerPolicy="no-referrer-when-downgrade" 
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0, borderRadius: '1.5rem' }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
                     className="grayscale-[20%] contrast-[90%] opacity-90 group-hover:grayscale-0 group-hover:contrast-100 group-hover:opacity-100 transition-all duration-700"
-                  ></iframe>
+                  />
+                ) : (
+                  <div className="w-full h-full rounded-[1.5rem] bg-[#FAF6F0] flex flex-col items-center justify-center text-center px-8">
+                    <MapPin size={34} strokeWidth={1.4} className="text-[#C07A60] mb-4" />
+                    <h3 className="font-serif text-2xl text-[#3D2512] mb-2">Consulta nuestra ubicación</h3>
+                    <p className="text-[#5E412F] text-sm leading-relaxed max-w-sm mb-6">
+                      El mapa interactivo se carga al solicitarlo para mejorar la velocidad y la privacidad del sitio.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setMapLoaded(true)}
+                      className="inline-flex items-center gap-2 px-6 py-3 text-[0.65rem] font-semibold tracking-[2px] uppercase bg-[#2E1A0E] text-white rounded-full transition-all hover:bg-[#C07A60]"
+                    >
+                      <MapPin size={14} />
+                      Ver mapa interactivo
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -361,7 +429,7 @@ const Home = () => {
         </section>
 
         {/* ── CTA ── */}
-        <section className="py-24 px-5 md:px-8 bg-[#FAF6F0] text-center border-t border-[#B48C64]/10">
+        <section className="defer-section py-24 px-5 md:px-8 bg-[#FAF6F0] text-center border-t border-[#B48C64]/10">
           <div className="max-w-xl mx-auto">
             <div className="w-px h-12 bg-gradient-to-b from-transparent to-[#C9A050] mx-auto mb-10 opacity-60" />
             <h2 className="font-serif text-3xl md:text-4xl font-light text-[#3D2512] mb-4 leading-tight">
@@ -380,7 +448,7 @@ const Home = () => {
         </section>
 
       </main>
-      <Footer />
+      <Footer loadRemoteSettings={loadSecondaryContent} />
     </div>
   );
 };

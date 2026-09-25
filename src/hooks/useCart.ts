@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
+import { getSessionStorageId } from '../utils/session';
 
-const CART_STORAGE_KEY = 'estetica_client_cart';
-const CART_UPDATED_EVENT = 'estetica-cart-updated';
+const LEGACY_CART_STORAGE_KEY = 'estetica_client_cart';
+const CART_STORAGE_PREFIX = 'estetica_client_cart';
+const CART_UPDATED_EVENT_PREFIX = 'estetica-cart-updated';
 
 export interface CartProduct {
   id: number;
@@ -27,9 +29,14 @@ const normalizeCart = (items: CartItem[]) => {
     }));
 };
 
-const readCart = (): CartItem[] => {
+const getCartStorageKey = () => {
+  const sessionId = getSessionStorageId();
+  return `${CART_STORAGE_PREFIX}:${sessionId || 'anonymous'}`;
+};
+
+const readCart = (storageKey: string): CartItem[] => {
   try {
-    const rawCart = localStorage.getItem(CART_STORAGE_KEY);
+    const rawCart = localStorage.getItem(storageKey);
     if (!rawCart) return [];
 
     const parsed = JSON.parse(rawCart);
@@ -39,38 +46,45 @@ const readCart = (): CartItem[] => {
   }
 };
 
-const persistCart = (nextItems: CartItem[]) => {
+const persistCart = (storageKey: string, eventName: string, nextItems: CartItem[]) => {
   const normalized = normalizeCart(nextItems);
-  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(normalized));
+  localStorage.setItem(storageKey, JSON.stringify(normalized));
   queueMicrotask(() => {
-    window.dispatchEvent(new CustomEvent(CART_UPDATED_EVENT, { detail: normalized }));
+    window.dispatchEvent(new CustomEvent(eventName, { detail: normalized }));
   });
   return normalized;
 };
 
 export const useCart = () => {
-  const [items, setItems] = useState<CartItem[]>(readCart);
+  const [storageKey] = useState(getCartStorageKey);
+  const eventName = `${CART_UPDATED_EVENT_PREFIX}:${storageKey}`;
+  const [items, setItems] = useState<CartItem[]>(() => readCart(storageKey));
 
   useEffect(() => {
+    // La llave antigua era compartida por todas las cuentas del navegador.
+    // Se elimina para evitar que un cliente herede el carrito de otro.
+    localStorage.removeItem(LEGACY_CART_STORAGE_KEY);
+    setItems(readCart(storageKey));
+
     const syncCart = (event: Event) => {
       const customEvent = event as CustomEvent<CartItem[]>;
-      setItems(Array.isArray(customEvent.detail) ? customEvent.detail : readCart());
+      setItems(Array.isArray(customEvent.detail) ? customEvent.detail : readCart(storageKey));
     };
 
     const syncStorageCart = (event: StorageEvent) => {
-      if (event.key === CART_STORAGE_KEY) {
-        setItems(readCart());
+      if (event.key === storageKey) {
+        setItems(readCart(storageKey));
       }
     };
 
-    window.addEventListener(CART_UPDATED_EVENT, syncCart);
+    window.addEventListener(eventName, syncCart);
     window.addEventListener('storage', syncStorageCart);
 
     return () => {
-      window.removeEventListener(CART_UPDATED_EVENT, syncCart);
+      window.removeEventListener(eventName, syncCart);
       window.removeEventListener('storage', syncStorageCart);
     };
-  }, []);
+  }, [eventName, storageKey]);
 
   const addItem = (product: CartProduct, quantity = 1) => {
     if (!product.stock || product.stock <= 0) return;
@@ -93,7 +107,7 @@ export const useCart = () => {
         });
       }
 
-      return persistCart(nextItems);
+      return persistCart(storageKey, eventName, nextItems);
     });
   };
 
@@ -108,16 +122,16 @@ export const useCart = () => {
         };
       });
 
-      return persistCart(nextItems);
+      return persistCart(storageKey, eventName, nextItems);
     });
   };
 
   const removeItem = (productId: number) => {
-    setItems((currentItems) => persistCart(currentItems.filter((item) => item.id !== productId)));
+    setItems((currentItems) => persistCart(storageKey, eventName, currentItems.filter((item) => item.id !== productId)));
   };
 
   const clearCart = () => {
-    setItems(() => persistCart([]));
+    setItems(() => persistCart(storageKey, eventName, []));
   };
 
   const totals = useMemo(() => {

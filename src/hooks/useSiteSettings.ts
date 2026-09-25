@@ -38,13 +38,17 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
 
 const fetcher = (url: string) => api.get(url).then((res) => res.data);
 
-export const useSiteSettings = () => {
+export const useSiteSettings = (enabled = true) => {
   const { data, error, isLoading, mutate } = useSWR<Partial<SiteSettings>>(
-    '/site-settings/public',
+    enabled ? '/site-settings/public' : null,
     fetcher,
     {
-      refreshInterval: 3000,
-      revalidateOnFocus: true,
+      // La configuración pública cambia muy poco; no es necesario consultarla
+      // cada 3 segundos. Evitamos solicitudes repetidas durante la carga inicial.
+      refreshInterval: 0,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      dedupingInterval: 60000,
     }
   );
 
