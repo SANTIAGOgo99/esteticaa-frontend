@@ -22,12 +22,31 @@ const Home = () => {
   const [servicios, setServicios] = useState<Servicio[]>([]);
   const [loading, setLoading] = useState(true);
   const [mapLoaded, setMapLoaded] = useState(false);
-  const { settings } = useSiteSettings();
+  const [loadSecondaryContent, setLoadSecondaryContent] = useState(false);
+  const { settings } = useSiteSettings(loadSecondaryContent);
   const phones = [settings.phone_primary, settings.phone_secondary].filter(Boolean);
 
   const handleOpenLogin = () => navigate('/login');
 
   useEffect(() => {
+    const activateSecondaryContent = () => {
+      setLoadSecondaryContent(true);
+    };
+
+    window.addEventListener('scroll', activateSecondaryContent, { passive: true, once: true });
+    window.addEventListener('touchstart', activateSecondaryContent, { passive: true, once: true });
+    window.addEventListener('pointerdown', activateSecondaryContent, { passive: true, once: true });
+
+    return () => {
+      window.removeEventListener('scroll', activateSecondaryContent);
+      window.removeEventListener('touchstart', activateSecondaryContent);
+      window.removeEventListener('pointerdown', activateSecondaryContent);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!loadSecondaryContent) return;
+
     const fetchCatalogo = async () => {
       try {
         setLoading(true);
@@ -44,14 +63,8 @@ const Home = () => {
       }
     };
 
-    // El catálogo está debajo del hero. Dar prioridad al primer render mejora
-    // FCP/LCP en conexiones móviles lentas sin cambiar la experiencia visual.
-    const timer = window.setTimeout(() => {
-      void fetchCatalogo();
-    }, 1000);
-
-    return () => window.clearTimeout(timer);
-  }, []);
+    void fetchCatalogo();
+  }, [loadSecondaryContent]);
 
   const getImageUrl = (url?: string) => {
     if (!url) return null;
@@ -435,7 +448,7 @@ const Home = () => {
         </section>
 
       </main>
-      <Footer />
+      <Footer loadRemoteSettings={loadSecondaryContent} />
     </div>
   );
 };
