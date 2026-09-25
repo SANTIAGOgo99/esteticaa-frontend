@@ -21,6 +21,7 @@ const Home = () => {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [servicios, setServicios] = useState<Servicio[]>([]);
   const [loading, setLoading] = useState(true);
+  const [mapLoaded, setMapLoaded] = useState(false);
   const { settings } = useSiteSettings();
   const phones = [settings.phone_primary, settings.phone_secondary].filter(Boolean);
 
@@ -55,7 +56,9 @@ const Home = () => {
   const getImageUrl = (url?: string) => {
     if (!url) return null;
     if (url.startsWith('http')) return url;
-    return `http://localhost:3000${url}`;
+
+    const apiBase = String(import.meta.env.VITE_API_URL || '').replace(/\/api\/?$/, '');
+    return `${apiBase}${url.startsWith('/') ? url : `/${url}`}`;
   };
 
   return (
@@ -373,20 +376,39 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Mapa Interactivo */}
+            {/* Mapa Interactivo: se carga solo cuando el usuario lo solicita.
+                Así evitamos cookies y scripts de terceros durante la carga inicial. */}
             <div className="flex-1 w-full max-w-[500px] lg:max-w-none mx-auto mt-10 lg:mt-0">
               <div className="w-full h-[450px] md:h-[500px] bg-white rounded-[2rem] p-2.5 border border-[#C9A050]/30 shadow-[0_20px_50px_rgba(61,37,18,.08)] relative overflow-hidden group">
-                 <iframe
+                {mapLoaded ? (
+                  <iframe
                     title="Ubicación de Ezequiel Castillo Hair Designer"
                     src={settings.map_embed_url}
-                    width="100%" 
-                    height="100%" 
-                    style={{ border: 0, borderRadius: '1.5rem' }} 
-                    allowFullScreen 
-                    loading="lazy" 
-                    referrerPolicy="no-referrer-when-downgrade" 
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0, borderRadius: '1.5rem' }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
                     className="grayscale-[20%] contrast-[90%] opacity-90 group-hover:grayscale-0 group-hover:contrast-100 group-hover:opacity-100 transition-all duration-700"
-                  ></iframe>
+                  />
+                ) : (
+                  <div className="w-full h-full rounded-[1.5rem] bg-[#FAF6F0] flex flex-col items-center justify-center text-center px-8">
+                    <MapPin size={34} strokeWidth={1.4} className="text-[#C07A60] mb-4" />
+                    <h3 className="font-serif text-2xl text-[#3D2512] mb-2">Consulta nuestra ubicación</h3>
+                    <p className="text-[#5E412F] text-sm leading-relaxed max-w-sm mb-6">
+                      El mapa interactivo se carga al solicitarlo para mejorar la velocidad y la privacidad del sitio.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setMapLoaded(true)}
+                      className="inline-flex items-center gap-2 px-6 py-3 text-[0.65rem] font-semibold tracking-[2px] uppercase bg-[#2E1A0E] text-white rounded-full transition-all hover:bg-[#C07A60]"
+                    >
+                      <MapPin size={14} />
+                      Ver mapa interactivo
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
