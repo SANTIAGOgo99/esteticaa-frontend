@@ -30,9 +30,11 @@ const Home = () => {
     const fetchCatalogo = async () => {
       try {
         setLoading(true);
-        const prodRes = await api.get('/products/active');
+        const [prodRes, servRes] = await Promise.all([
+          api.get('/products/active'),
+          api.get('/services/active'),
+        ]);
         setProductos(prodRes.data.slice(0, 8));
-        const servRes = await api.get('/services/active');
         setServicios(servRes.data.slice(0, 8));
       } catch (error) {
         console.error("Error cargando el catálogo público:", error);
@@ -40,7 +42,14 @@ const Home = () => {
         setLoading(false);
       }
     };
-    fetchCatalogo();
+
+    // El catálogo está debajo del hero. Dar prioridad al primer render mejora
+    // FCP/LCP en conexiones móviles lentas sin cambiar la experiencia visual.
+    const timer = window.setTimeout(() => {
+      void fetchCatalogo();
+    }, 1000);
+
+    return () => window.clearTimeout(timer);
   }, []);
 
   const getImageUrl = (url?: string) => {
@@ -104,11 +113,20 @@ const Home = () => {
             <div className="flex-shrink-0 hidden lg:block relative w-[380px] h-[500px] animate-fade-up" style={{ animationDelay: '0.4s' }}>
               <div className="w-full h-full rounded-t-[200px] rounded-b-[20px] overflow-hidden border-4 border-[#3D2512] shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative z-10">
                 <div className="absolute inset-0 bg-[#C9A050]/10 mix-blend-overlay z-10" />
-                <img 
-                  src="https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=1000&auto=format&fit=crop" 
-                  alt="Interior Atelier" 
-                  className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" 
-                />
+                <picture>
+                  <source
+                    media="(min-width: 1024px)"
+                    srcSet="https://images.unsplash.com/photo-1560066984-138dadb4c035?q=75&w=760&auto=format&fit=crop"
+                  />
+                  <img
+                    src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                    alt="Interior Atelier"
+                    width="380"
+                    height="500"
+                    decoding="async"
+                    className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                  />
+                </picture>
               </div>
 
               <div className="absolute bottom-16 -left-12 bg-[#FAF6F0] border border-[#C9A050]/20 rounded-2xl px-5 py-3.5 shadow-2xl flex items-center gap-4 animate-float z-20">
@@ -148,7 +166,7 @@ const Home = () => {
         </div>
 
         {/* ── SERVICIOS ── */}
-        <section className="py-20 px-5 md:px-8 bg-[#F2E9DC]" id="servicios">
+        <section className="defer-section py-20 px-5 md:px-8 bg-[#F2E9DC]" id="servicios">
           <div className="text-center max-w-3xl mx-auto mb-14">
             <span className="text-[0.58rem] font-medium tracking-[4.5px] uppercase text-[#C07A60] block mb-3">Rituales exclusivos</span>
             <h2 className="font-serif text-4xl md:text-5xl font-light text-[#3D2512]">
@@ -173,8 +191,15 @@ const Home = () => {
                     className="bg-white rounded-2xl border border-[#B48C64]/14 overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_50px_rgba(61,37,18,.12)] hover:border-[#C9A050]/35 group flex flex-col">
                     <div className="h-44 bg-gradient-to-br from-[#F2E3D9] to-[#DEB49E] flex items-center justify-center overflow-hidden shrink-0 relative">
                       {getImageUrl(serv.image_url) ? (
-                        <img src={getImageUrl(serv.image_url)!} alt={serv.name}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        <img
+                          src={getImageUrl(serv.image_url)!}
+                          alt={serv.name}
+                          width="420"
+                          height="176"
+                          loading="lazy"
+                          decoding="async"
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
                       ) : (
                         <Flower2 size={30} className="text-[#8B4C38]/40" strokeWidth={1} />
                       )}
@@ -203,7 +228,7 @@ const Home = () => {
         </section>
 
         {/* ── PRODUCTOS ── */}
-        <section className="py-20 px-5 md:px-8 bg-[#FAF6F0]" id="productos">
+        <section className="defer-section py-20 px-5 md:px-8 bg-[#FAF6F0]" id="productos">
           <div className="text-center max-w-3xl mx-auto mb-14">
             <span className="text-[0.58rem] font-medium tracking-[4.5px] uppercase text-[#C07A60] block mb-3">Esenciales seleccionados</span>
             <h2 className="font-serif text-4xl md:text-5xl font-light text-[#3D2512]">
@@ -228,8 +253,15 @@ const Home = () => {
                     className="bg-white rounded-2xl border border-[#C9A050]/14 overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_38px_rgba(61,37,18,.10)] hover:border-[#C9A050]/30 group flex flex-col">
                     <div className="h-36 bg-gradient-to-br from-[#F2E3D9] to-[#E8C9B8] flex items-center justify-center overflow-hidden shrink-0 relative">
                       {getImageUrl(prod.image_url) ? (
-                        <img src={getImageUrl(prod.image_url)!} alt={prod.name}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        <img
+                          src={getImageUrl(prod.image_url)!}
+                          alt={prod.name}
+                          width="420"
+                          height="144"
+                          loading="lazy"
+                          decoding="async"
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
                       ) : (
                         <Droplets size={26} className="text-[#C9907A]/50" strokeWidth={1} />
                       )}
@@ -253,7 +285,7 @@ const Home = () => {
         </section>
 
         {/* ── FILOSOFÍA ── */}
-        <section className="py-20 px-5 md:px-8 bg-[#2E1A0E] relative" id="nosotros">
+        <section className="defer-section py-20 px-5 md:px-8 bg-[#2E1A0E] relative" id="nosotros">
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#C9A050]/50 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#C9A050]/30 to-transparent" />
           <div className="text-center max-w-3xl mx-auto mb-14">
@@ -283,7 +315,7 @@ const Home = () => {
         </section>
 
         {/* ── UBICACIÓN Y MAPA (Actualizado por Legibilidad) ── */}
-        <section className="py-24 px-5 md:px-8 bg-[#F2E9DC] border-t border-[#B48C64]/10" id="ubicacion">
+        <section className="defer-section py-24 px-5 md:px-8 bg-[#F2E9DC] border-t border-[#B48C64]/10" id="ubicacion">
           <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-16 items-center">
             
             {/* Información de contacto - Estilo de la imagen de referencia */}
@@ -344,7 +376,8 @@ const Home = () => {
             {/* Mapa Interactivo */}
             <div className="flex-1 w-full max-w-[500px] lg:max-w-none mx-auto mt-10 lg:mt-0">
               <div className="w-full h-[450px] md:h-[500px] bg-white rounded-[2rem] p-2.5 border border-[#C9A050]/30 shadow-[0_20px_50px_rgba(61,37,18,.08)] relative overflow-hidden group">
-                 <iframe 
+                 <iframe
+                    title="Ubicación de Ezequiel Castillo Hair Designer"
                     src={settings.map_embed_url}
                     width="100%" 
                     height="100%" 
@@ -361,7 +394,7 @@ const Home = () => {
         </section>
 
         {/* ── CTA ── */}
-        <section className="py-24 px-5 md:px-8 bg-[#FAF6F0] text-center border-t border-[#B48C64]/10">
+        <section className="defer-section py-24 px-5 md:px-8 bg-[#FAF6F0] text-center border-t border-[#B48C64]/10">
           <div className="max-w-xl mx-auto">
             <div className="w-px h-12 bg-gradient-to-b from-transparent to-[#C9A050] mx-auto mb-10 opacity-60" />
             <h2 className="font-serif text-3xl md:text-4xl font-light text-[#3D2512] mb-4 leading-tight">
