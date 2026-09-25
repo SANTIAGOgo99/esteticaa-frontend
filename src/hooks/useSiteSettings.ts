@@ -43,8 +43,12 @@ export const useSiteSettings = () => {
     '/site-settings/public',
     fetcher,
     {
-      refreshInterval: 3000,
-      revalidateOnFocus: true,
+      // La configuración pública cambia muy poco; no es necesario consultarla
+      // cada 3 segundos. Evitamos solicitudes repetidas durante la carga inicial.
+      refreshInterval: 0,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      dedupingInterval: 60000,
     }
   );
 
