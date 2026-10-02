@@ -23,13 +23,13 @@ interface Appointment {
   id: number; service_id?: number; service_name?: string; servicio?: string;
   service_category?: string; category?: string; price?: string | number; total_amount?: string | number;
   duration?: number; duration_minutes?: number; appointment_date: string; appointment_local?: string; appointment_end?: string;
-  status: string; origin?: string; calendar_status?: string;
+  status: string; origin?: string; calendar_status?: string; calendar_status_code?: string;
   can_reschedule?: boolean; reschedule_deadline?: string | null; reschedule_reason?: string | null;
   hours_until_appointment?: number; minutes_until_appointment?: number;
 }
 
 const money = (value?: string | number) => Number(value || 0).toFixed(2);
-const statusOf = (item: Appointment) => item.calendar_status || item.status;
+const statusOf = (item: Appointment) => item.calendar_status_code || item.calendar_status || item.status;
 const statusLabel = (status: string) => ({
   pending: 'Pendiente',
   confirmed: 'Confirmada',
@@ -41,7 +41,7 @@ const statusLabel = (status: string) => ({
   pending_review: 'Pendiente de cierre',
 }[status] || status);
 const statusClass = (status: string) => status === 'confirmed' ? 'status-confirmed' : status === 'pending' ? 'status-pending' : ['canceled', 'cancelled', 'no_show'].includes(status) ? 'status-canceled' : 'status-completed';
-const active = (item: Appointment) => ['pending', 'confirmed'].includes(item.status);
+const active = (item: Appointment) => ['pending', 'confirmed'].includes(statusOf(item));
 const serviceName = (item: Appointment) => item.service_name || item.servicio || 'Servicio general';
 const dateLabel = (item: Appointment) => appointmentDateLabel(item.appointment_local, item.appointment_date);
 const hourLabel = (item: Appointment) => appointmentHourLabel(item.appointment_local, item.appointment_date);
