@@ -17,14 +17,56 @@ export const getApiMessage = (error: unknown, fallback: string) => {
   return fallback;
 };
 
-export const localDateKey = (value = new Date()) =>
-  `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}-${String(value.getDate()).padStart(2, '0')}`;
+const mexicoNowParts = () => {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: BUSINESS_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).formatToParts(new Date());
+
+  const values: Record<string, string> = {};
+  for (const part of parts) {
+    if (part.type !== 'literal') values[part.type] = part.value;
+  }
+
+  return {
+    year: Number(values.year),
+    month: Number(values.month),
+    day: Number(values.day),
+    hour: Number(values.hour),
+    minute: Number(values.minute),
+  };
+};
+
+export const localDateKey = () => {
+  const now = mexicoNowParts();
+  return `${now.year}-${String(now.month).padStart(2, '0')}-${String(now.day).padStart(2, '0')}`;
+};
 
 export const isSunday = (date: string) =>
   Boolean(date) && new Date(`${date}T12:00:00`).getDay() === 0;
 
+export const isTodayAfterBusinessHours = (date: string) => {
+  if (!date || date !== localDateKey()) return false;
+
+  const now = mexicoNowParts();
+  const day = new Date(`${date}T12:00:00`).getDay();
+
+  if (day === 0) return true;
+
+  const closeHour = day === 6 ? 18 : 19;
+  return now.hour >= closeHour;
+};
+
 export const isValidAppointmentDate = (date: string) =>
-  Boolean(date) && date >= localDateKey() && !isSunday(date);
+  Boolean(date) &&
+  date >= localDateKey() &&
+  !isSunday(date) &&
+  !isTodayAfterBusinessHours(date);
 
 const LOCAL_DATE_TIME_PATTERN = /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::\d{2})?/;
 
