@@ -185,7 +185,7 @@ const AdminAppointments = () => {
   const handleCloseAppointment = async (id: number, outcome: 'completed' | 'no_show') => {
     try {
       toast.loading('Cerrando cita...', { id: 'closeAppointment' });
-      await api.put(`/appointments/${id}/close`, { outcome });
+      await api.put(`/appointments/${id}/status`, { status: outcome });
       toast.success(outcome === 'completed' ? 'Cita marcada como completada.' : 'Cita marcada como no asistio.', { id: 'closeAppointment' });
       fetchCitas();
     } catch (error) {
