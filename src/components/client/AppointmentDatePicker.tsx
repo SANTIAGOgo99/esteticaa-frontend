@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { isSunday, localDateKey } from '../../pages/client/appointmentUtils';
+import { isSunday, isTodayAfterBusinessHours, localDateKey } from '../../pages/client/appointmentUtils';
 
 interface Props {
   value: string;
@@ -49,6 +49,7 @@ const AppointmentDatePicker = ({ value, onChange, min = localDateKey(), classNam
         .appointment-date-picker-day:disabled{cursor:not-allowed}
         .appointment-date-picker-day.past,.appointment-date-picker-day.outside{opacity:.18;background:#f4efe8;color:#9b8b7b}
         .appointment-date-picker-day.sunday{opacity:.38;background:#eee7df;color:#9b8b7b;text-decoration:line-through}
+        .appointment-date-picker-day.closed-today{opacity:.35;background:#eee7df;color:#9b8b7b;text-decoration:line-through}
         .appointment-date-picker-note{margin:10px 0 0;font-size:.75rem;color:#8b5e3c}
       `}</style>
       <div className="appointment-date-picker-toolbar">
@@ -67,7 +68,8 @@ const AppointmentDatePicker = ({ value, onChange, min = localDateKey(), classNam
           const outsideMonth = day.getMonth() !== visibleMonth.getMonth();
           const past = key < min;
           const sunday = isSunday(key);
-          const disabled = past || sunday || outsideMonth;
+          const closedToday = isTodayAfterBusinessHours(key);
+          const disabled = past || sunday || closedToday || outsideMonth;
           const selected = key === value;
           const today = key === localDateKey();
           return (
@@ -80,18 +82,29 @@ const AppointmentDatePicker = ({ value, onChange, min = localDateKey(), classNam
                 outsideMonth ? 'outside' : '',
                 past ? 'past' : '',
                 sunday ? 'sunday' : '',
+                closedToday ? 'closed-today' : '',
                 selected ? 'selected' : '',
                 today ? 'today' : '',
               ].filter(Boolean).join(' ')}
               onClick={() => onChange(key)}
-              title={sunday ? 'Los domingos la estética permanece cerrada.' : past ? 'Fecha no disponible' : undefined}
+              title={
+                sunday
+                  ? 'Los domingos la estética permanece cerrada.'
+                  : closedToday
+                    ? 'La jornada de hoy ya terminó. Selecciona otro día.'
+                    : past
+                      ? 'Fecha no disponible'
+                      : undefined
+              }
             >
               {day.getDate()}
             </button>
           );
         })}
       </div>
-      <p className="appointment-date-picker-note">Los domingos la estética permanece cerrada.</p>
+      <p className="appointment-date-picker-note">
+        Los domingos la estética permanece cerrada. Cuando termina la jornada, el día actual también se deshabilita.
+      </p>
     </div>
   );
 };
