@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import api from '../../services/api';
 
-type GuardStatus = 'checking' | 'allowed' | 'login' | 'denied';
+type GuardStatus = 'offline' | 'checking' | 'allowed' | 'login' | 'denied';
 
 interface ProtectedRouteProps {
   allowedRoles: string[];
@@ -17,6 +17,7 @@ const ProtectedRoute = ({ allowedRoles, unauthorizedPath = '/login' }: Protected
     let mounted = true;
 
     const validateSession = async () => {
+      if (!navigator.onLine) { setStatus('offline'); return; }
       const token = localStorage.getItem('token');
 
       if (!token) {
@@ -36,6 +37,7 @@ const ProtectedRoute = ({ allowedRoles, unauthorizedPath = '/login' }: Protected
 
         setStatus(allowedRoles.includes(role) ? 'allowed' : 'denied');
       } catch {
+        if (!navigator.onLine) { if (mounted) setStatus('offline'); return; }
         localStorage.removeItem('token');
         localStorage.removeItem('role');
 
@@ -46,12 +48,17 @@ const ProtectedRoute = ({ allowedRoles, unauthorizedPath = '/login' }: Protected
     };
 
     validateSession();
+    window.addEventListener('online', validateSession);
+    window.addEventListener('offline', validateSession);
 
     return () => {
       mounted = false;
+      window.removeEventListener('online', validateSession);
+      window.removeEventListener('offline', validateSession);
     };
   }, [allowedRoles, location.pathname]);
 
+  if (status === 'offline') return <main style={{ padding: 30 }}>Necesitas conexión para validar tu sesión y consultar datos privados. <a href='/catalogo'>Consultar catálogo público</a></main>;
   if (status === 'checking') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FAF6F0] text-[#3D2512] font-sans">

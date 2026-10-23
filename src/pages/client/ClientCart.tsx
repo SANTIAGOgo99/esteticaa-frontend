@@ -37,7 +37,7 @@ const ClientCart = ({
   goToProducts,
 }: ClientCartProps) => {
   const handleCheckout = () => {
-    toast.success('Pedido preparado. El siguiente paso sera conectar ventas en linea.');
+    toast.error(navigator.onLine ? 'Las ventas en línea todavía no están habilitadas. No se ha realizado ninguna compra.' : 'Necesitas conexión para procesar compras. No se ha realizado ninguna compra.');
   };
 
   if (items.length === 0) {

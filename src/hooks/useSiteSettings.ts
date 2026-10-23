@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import api from '../services/api';
+import api from '../services/publicApi';
 
 export interface SiteSettings {
   terms_text: string;
@@ -47,7 +47,7 @@ export const useSiteSettings = (enabled = true) => {
       // cada 3 segundos. Evitamos solicitudes repetidas durante la carga inicial.
       refreshInterval: 0,
       revalidateOnFocus: false,
-      revalidateOnReconnect: false,
+      revalidateOnReconnect: true,
       dedupingInterval: 60000,
     }
   );

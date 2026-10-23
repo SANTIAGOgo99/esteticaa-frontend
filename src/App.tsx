@@ -1,3 +1,5 @@
+import PwaStatus from './components/common/PwaStatus';
+import PublicCatalog from './pages/public/PublicCatalog';
 // src/App.tsx
 import { Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
@@ -28,11 +30,11 @@ import ClientDashboard from "./pages/client/ClientDashboard";
 function App() {
   return (
     <>
-      <Toaster position="top-right" reverseOrder={false} />
+      <PwaStatus /><Toaster position="top-right" reverseOrder={false} />
 
       <Routes>
         {/* ================= Lado Público ================= */}
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home />} /><Route path="/catalogo" element={<PublicCatalog />} />
         <Route path="/login" element={<Login />} />
         <Route path="/terminos" element={<Terminos />} />
         <Route path="/privacidad" element={<Privacidad />} />

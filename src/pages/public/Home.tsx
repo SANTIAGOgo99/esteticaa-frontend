@@ -1,9 +1,10 @@
+import Directions from '../../components/public/Directions';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Sparkles, Flower2, Clock, Heart, Droplets, MapPin, Phone, Star } from 'lucide-react';
 import Navbar from "../../components/public/Navbar";
 import Footer from "../../components/public/Footer";
-import api from '../../services/api';
+import api from '../../services/publicApi';
 import { useSiteSettings } from '../../hooks/useSiteSettings';
 import "./Home.css";
 
@@ -64,6 +65,8 @@ const Home = () => {
     };
 
     void fetchCatalogo();
+      window.addEventListener('online', fetchCatalogo);
+    return () => window.removeEventListener('online', fetchCatalogo);
   }, [loadSecondaryContent]);
 
   const getImageUrl = (url?: string) => {
@@ -360,7 +363,7 @@ const Home = () => {
                   </div>
                 </div>
 
-                {/* Teléfono */}
+                <Directions address={settings.business_address}/>{/* Teléfono */}
                 <div className="flex items-start gap-5 group">
                   <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center text-[#C07A60] shrink-0 shadow-sm border border-[#C9A050]/10 transition-transform group-hover:scale-105">
                     <Phone size={22} strokeWidth={1.2} />
