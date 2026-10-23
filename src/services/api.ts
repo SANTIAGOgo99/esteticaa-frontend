@@ -6,6 +6,7 @@ const api = axios.create({
 
 // Este interceptor pega automáticamente tu Token en cada petición
 api.interceptors.request.use((config) => {
+  if (!navigator.onLine) return Promise.reject(new Error('Necesitas conexión para realizar esta operación.'));
   const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
