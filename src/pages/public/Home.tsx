@@ -1,73 +1,30 @@
+import PublicCatalogImage from '../../components/public/PublicCatalogImage';
 import Directions from '../../components/public/Directions';
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { usePublicCatalog } from '../../hooks/usePublicCatalog';
 import { Calendar, Sparkles, Flower2, Clock, Heart, Droplets, MapPin, Phone, Star } from 'lucide-react';
 import Navbar from "../../components/public/Navbar";
 import Footer from "../../components/public/Footer";
-import api from '../../services/publicApi';
 import { useSiteSettings } from '../../hooks/useSiteSettings';
 import "./Home.css";
 
-interface Producto {
-  id: number; name: string; brand: string; category: string;
-  price: string | number; stock: number; image_url?: string;
-}
-interface Servicio {
-  id: number; name: string; description: string;
-  price: string | number; duration_minutes: number; image_url?: string;
-}
-
 const Home = () => {
   const navigate = useNavigate();
-  const [productos, setProductos] = useState<Producto[]>([]);
-  const [servicios, setServicios] = useState<Servicio[]>([]);
-  const [loading, setLoading] = useState(true);
+  const location = useLocation();
   const [mapLoaded, setMapLoaded] = useState(false);
-  const [loadSecondaryContent, setLoadSecondaryContent] = useState(false);
-  const { settings } = useSiteSettings(loadSecondaryContent);
+  const products = usePublicCatalog('products');
+  const services = usePublicCatalog('services');
+  const productos = products.items;
+  const servicios = services.items;
+  const { settings } = useSiteSettings();
   const phones = [settings.phone_primary, settings.phone_secondary].filter(Boolean);
-
   const handleOpenLogin = () => navigate('/login');
 
   useEffect(() => {
-    const activateSecondaryContent = () => {
-      setLoadSecondaryContent(true);
-    };
-
-    window.addEventListener('scroll', activateSecondaryContent, { passive: true, once: true });
-    window.addEventListener('touchstart', activateSecondaryContent, { passive: true, once: true });
-    window.addEventListener('pointerdown', activateSecondaryContent, { passive: true, once: true });
-
-    return () => {
-      window.removeEventListener('scroll', activateSecondaryContent);
-      window.removeEventListener('touchstart', activateSecondaryContent);
-      window.removeEventListener('pointerdown', activateSecondaryContent);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!loadSecondaryContent) return;
-
-    const fetchCatalogo = async () => {
-      try {
-        setLoading(true);
-        const [prodRes, servRes] = await Promise.all([
-          api.get('/products/active'),
-          api.get('/services/active'),
-        ]);
-        setProductos(prodRes.data.slice(0, 8));
-        setServicios(servRes.data.slice(0, 8));
-      } catch (error) {
-        console.error("Error cargando el catálogo público:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    void fetchCatalogo();
-      window.addEventListener('online', fetchCatalogo);
-    return () => window.removeEventListener('online', fetchCatalogo);
-  }, [loadSecondaryContent]);
+    if (products.loading || services.loading || !location.hash) return;
+    document.getElementById(location.hash.slice(1))?.scrollIntoView({ block: 'start' });
+  }, [location.hash, products.loading, services.loading]);
 
   const getImageUrl = (url?: string) => {
     if (!url) return null;
@@ -138,6 +95,7 @@ const Home = () => {
                     srcSet="https://images.unsplash.com/photo-1560066984-138dadb4c035?q=75&w=760&auto=format&fit=crop"
                   />
                   <img
+                          crossOrigin="anonymous"
                     src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
                     alt="Interior Atelier"
                     width="380"
@@ -199,10 +157,10 @@ const Home = () => {
             </p>
           </div>
           <div className="max-w-7xl mx-auto">
-            {loading ? (
+            {services.loading ? (
               <p className="text-center text-[#8C7060] py-20">Cargando tratamientos...</p>
             ) : servicios.length === 0 ? (
-              <p className="text-center text-[#8C7060] py-20">Próximamente nuevas experiencias.</p>
+              <p className="text-center text-[#8C7060] py-20">{services.unavailable ? 'El catálogo de servicios todavía no se ha descargado en este navegador.' : 'Próximamente nuevas experiencias.'}</p>
             ) : (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {servicios.map(serv => (
@@ -210,7 +168,8 @@ const Home = () => {
                     className="bg-white rounded-2xl border border-[#B48C64]/14 overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_50px_rgba(61,37,18,.12)] hover:border-[#C9A050]/35 group flex flex-col">
                     <div className="h-44 bg-gradient-to-br from-[#F2E3D9] to-[#DEB49E] flex items-center justify-center overflow-hidden shrink-0 relative">
                       {getImageUrl(serv.image_url) ? (
-                        <img
+                        <PublicCatalogImage
+                          crossOrigin="anonymous"
                           src={getImageUrl(serv.image_url)!}
                           alt={serv.name}
                           width="420"
@@ -261,10 +220,10 @@ const Home = () => {
             </p>
           </div>
           <div className="max-w-7xl mx-auto">
-            {loading ? (
+            {products.loading ? (
               <p className="text-center text-[#8C7060] py-20">Cargando productos...</p>
             ) : productos.length === 0 ? (
-              <p className="text-center text-[#8C7060] py-20">Próximamente nuevas fórmulas.</p>
+              <p className="text-center text-[#8C7060] py-20">{products.unavailable ? 'El catálogo de productos todavía no se ha descargado en este navegador.' : 'Próximamente nuevas fórmulas.'}</p>
             ) : (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                 {productos.map(prod => (
@@ -272,7 +231,8 @@ const Home = () => {
                     className="bg-white rounded-2xl border border-[#C9A050]/14 overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_38px_rgba(61,37,18,.10)] hover:border-[#C9A050]/30 group flex flex-col">
                     <div className="h-36 bg-gradient-to-br from-[#F2E3D9] to-[#E8C9B8] flex items-center justify-center overflow-hidden shrink-0 relative">
                       {getImageUrl(prod.image_url) ? (
-                        <img
+                        <PublicCatalogImage
+                          crossOrigin="anonymous"
                           src={getImageUrl(prod.image_url)!}
                           alt={prod.name}
                           width="420"
@@ -451,7 +411,7 @@ const Home = () => {
         </section>
 
       </main>
-      <Footer loadRemoteSettings={loadSecondaryContent} />
+      <Footer />
     </div>
   );
 };

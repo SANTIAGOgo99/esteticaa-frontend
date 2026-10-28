@@ -2,33 +2,16 @@
   position: fixed;
   z-index: 12000;
   bottom: max(12px, env(safe-area-inset-bottom));
-  left: 16px;
   right: 16px;
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 12px 16px;
-  background: #151515;
+  max-width: calc(100vw - 24px);
+  padding: 9px 13px;
   color: #fff;
-  border: 1px solid #454545;
-  border-radius: 12px;
-  box-shadow: 0 5px 24px #0003;
-  font: 14px/1.5 system-ui, sans-serif;
+  border: 1px solid #ffffff30;
+  border-radius: 24px;
+  box-shadow: 0 3px 15px #0002;
+  font: 13px/1.4 system-ui, sans-serif;
 }
-.pwa-status--offline { border-color: #efbc62; background: #302315; }
-.pwa-status--recovered { border-color: #7cd9a3; background: #153124; }
-.pwa-status__message { display: flex; align-items: flex-start; gap: 10px; }
-.pwa-status__message svg { flex-shrink: 0; margin-top: 2px; }
-.pwa-status__message strong { font-weight: 700; }
-.pwa-status__message p { margin: 3px 0 0; font-size: 13px; color: #f1f1f1; }
-.pwa-status__actions { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 6px 0 0 30px; }
-.pwa-status__actions a, .pwa-status__actions button { color: #fff; text-decoration: underline; font-size: 13px; }
-.pwa-status__actions button { background: transparent; border: 0; cursor: pointer; padding: 0; }
-.pwa-status__actions :focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
-.pwa-status__error { margin: 6px 0 0; }
-body { padding-bottom: 150px; }
-@media (max-width: 600px) {
-  .pwa-status { left: 8px; right: 8px; padding: 10px 12px; }
-  .pwa-status__message p { font-size: 12px; }
-  .pwa-status__actions { margin-left: 0; }
-  body { padding-bottom: 190px; }
-}
+.pwa-status > div { display: flex; align-items: center; gap: 8px; }
+.pwa-status--online { background: #234534; }
+.pwa-status--offline { background: #37271b; }
+@media (max-width: 600px) { .pwa-status { right: 10px; font-size: 12px; } }

@@ -67,8 +67,7 @@ body { font-family: var(--font-sans); }
 
 /* Evita renderizar por completo las secciones alejadas del primer viewport. */
 .defer-section {
-  content-visibility: auto;
-  contain-intrinsic-size: 900px;
+  content-visibility: visible;
 }
 
 @media (max-width: 768px) {
@@ -82,3 +81,5 @@ body { font-family: var(--font-sans); }
     transform: none !important;
   }
 }
+/* Preserve anchors under the fixed header in both browser and installed PWA. */
+section[id] { scroll-margin-top: 78px; }
